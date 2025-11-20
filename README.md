@@ -1,4 +1,4 @@
-# Claude Code Manager - VS Code Extension
+# Claude Code Config - VS Code Extension
 
 A VS Code extension that helps you manage Claude Code configurations and visualize usage metrics right in VS Code.
 
@@ -15,13 +15,6 @@ A VS Code extension that helps you manage Claude Code configurations and visuali
 - **Location Badges** - Instantly see where each config lives: `[Global]`, `[Project]`, or nested paths
 - **Click to Open** - Single-click any file to open in VS Code's native editor
 - **Move Between Scopes** - Right-click to move configs between Global and Project scopes
-
-### Usage Analytics Dashboard
-
-- Beautiful charts showing token usage and costs
-- Model breakdown (Sonnet, Opus, Haiku)
-- Daily usage trends
-- Export to JSON or CSV
 
 ### Documentation Quick Links
 
@@ -64,7 +57,7 @@ A VS Code extension that helps you manage Claude Code configurations and visuali
 
 ### Viewing Configurations
 
-1. Click the Claude Code Manager icon in the Activity Bar (left sidebar)
+1. Click the Claude Code Config icon in the Activity Bar (left sidebar)
 2. Expand each section to see your configurations:
    - **Claude Context** - Your CLAUDE.md files
    - **Memories** - Persistent knowledge for Claude
@@ -94,7 +87,7 @@ A VS Code extension that helps you manage Claude Code configurations and visuali
 
 ## Configuration
 
-Open VS Code settings and search for "Claude Code Manager":
+Open VS Code settings and search for "Claude Code Config":
 
 | Setting                              | Description                             | Default       |
 | ------------------------------------ | --------------------------------------- | ------------- |

@@ -21,7 +21,7 @@ import { COMMAND_IDS, VIEW_IDS } from './core/constants';
 let fileWatcher: vscode.FileSystemWatcher | undefined;
 
 export function activate(context: vscode.ExtensionContext) {
-  console.log('Claude Code Manager is now active!');
+  console.log('Claude Code Config is now active!');
 
   // Initialize services
   const fileDiscoveryService = new FileDiscoveryService();
@@ -68,7 +68,7 @@ export function activate(context: vscode.ExtensionContext) {
     // Refresh command
     vscode.commands.registerCommand(COMMAND_IDS.refresh, () => {
       refreshAll();
-      vscode.window.showInformationMessage('Claude Code Manager refreshed.');
+      vscode.window.showInformationMessage('Claude Code Config refreshed.');
     }),
 
     // Open file command

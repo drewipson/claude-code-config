@@ -3,7 +3,7 @@ import * as path from 'path';
 import { DocumentationLink } from './types';
 
 export const EXTENSION_ID = 'claude-code-manager';
-export const EXTENSION_NAME = 'Claude Code Manager';
+export const EXTENSION_NAME = 'Claude Code Config';
 
 // Default paths
 export const DEFAULT_GLOBAL_CLAUDE_PATH = path.join(os.homedir(), '.claude');

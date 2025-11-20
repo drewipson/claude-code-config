@@ -1,7 +1,7 @@
 {
   "name": "claude-code-manager",
-  "displayName": "Claude Code Manager",
-  "description": "Manage Claude Code configurations and visualize usage with beautiful analytics",
+  "displayName": "Claude Code Config",
+  "description": "Manage and configure Claude Code settings with powerful tools and analytics",
   "version": "0.1.0",
   "publisher": "claude-code-manager",
   "engines": {
@@ -32,7 +32,7 @@
       "activitybar": [
         {
           "id": "claude-code-manager",
-          "title": "Claude Code Manager",
+          "title": "Claude Code Config",
           "icon": "resources/icons/claude-logo.svg"
         }
       ]
@@ -78,140 +78,140 @@
         "command": "ccm.refresh",
         "title": "Refresh",
         "icon": "$(refresh)",
-        "category": "Claude Code Manager"
+        "category": "Claude Code Config"
       },
       {
         "command": "ccm.openFile",
         "title": "Open File",
-        "category": "Claude Code Manager"
+        "category": "Claude Code Config"
       },
       {
         "command": "ccm.goToLine",
         "title": "Go to Section",
-        "category": "Claude Code Manager"
+        "category": "Claude Code Config"
       },
       {
         "command": "ccm.moveToGlobal",
         "title": "Move to Global",
-        "category": "Claude Code Manager"
+        "category": "Claude Code Config"
       },
       {
         "command": "ccm.moveToProject",
         "title": "Move to Project",
-        "category": "Claude Code Manager"
+        "category": "Claude Code Config"
       },
       {
         "command": "ccm.revealInFinder",
         "title": "Reveal in Finder",
-        "category": "Claude Code Manager"
+        "category": "Claude Code Config"
       },
       {
         "command": "ccm.copyPath",
         "title": "Copy Path",
-        "category": "Claude Code Manager"
+        "category": "Claude Code Config"
       },
       {
         "command": "ccm.deleteFile",
         "title": "Delete",
-        "category": "Claude Code Manager"
+        "category": "Claude Code Config"
       },
       {
         "command": "ccm.renameFile",
         "title": "Rename",
-        "category": "Claude Code Manager"
+        "category": "Claude Code Config"
       },
       {
         "command": "ccm.createCommandFolder",
         "title": "Create Command Folder",
         "icon": "$(new-folder)",
-        "category": "Claude Code Manager"
+        "category": "Claude Code Config"
       },
       {
         "command": "ccm.createSubAgentFolder",
         "title": "Create Sub-Agent Folder",
         "icon": "$(new-folder)",
-        "category": "Claude Code Manager"
+        "category": "Claude Code Config"
       },
       {
         "command": "ccm.createCommandInFolder",
         "title": "New Command in Folder",
-        "category": "Claude Code Manager"
+        "category": "Claude Code Config"
       },
       {
         "command": "ccm.createSkillInFolder",
         "title": "New Skill in Folder",
-        "category": "Claude Code Manager"
+        "category": "Claude Code Config"
       },
       {
         "command": "ccm.createSubAgentInFolder",
         "title": "New Sub-Agent in Folder",
-        "category": "Claude Code Manager"
+        "category": "Claude Code Config"
       },
       {
         "command": "ccm.openDocs",
         "title": "Open Documentation",
         "icon": "$(book)",
-        "category": "Claude Code Manager"
+        "category": "Claude Code Config"
       },
       {
         "command": "ccm.createSkill",
         "title": "Create Skill",
         "icon": "$(add)",
-        "category": "Claude Code Manager"
+        "category": "Claude Code Config"
       },
       {
         "command": "ccm.createSubAgent",
         "title": "Create Sub-Agent",
         "icon": "$(add)",
-        "category": "Claude Code Manager"
+        "category": "Claude Code Config"
       },
       {
         "command": "ccm.createMemoryFromTemplate",
         "title": "Create CLAUDE.md from Template",
         "icon": "$(new-file)",
-        "category": "Claude Code Manager"
+        "category": "Claude Code Config"
       },
       {
         "command": "ccm.createCommand",
         "title": "Create Command",
         "icon": "$(add)",
-        "category": "Claude Code Manager"
+        "category": "Claude Code Config"
       },
       {
         "command": "ccm.openSettingsFile",
         "title": "Open Settings File",
-        "category": "Claude Code Manager"
+        "category": "Claude Code Config"
       },
       {
         "command": "ccm.viewMcpConfig",
         "title": "View MCP Configuration",
-        "category": "Claude Code Manager"
+        "category": "Claude Code Config"
       },
       {
         "command": "ccm.createHook",
         "title": "Create Hook",
         "icon": "$(add)",
-        "category": "Claude Code Manager"
+        "category": "Claude Code Config"
       },
       {
         "command": "ccm.editHook",
         "title": "Edit Hook",
-        "category": "Claude Code Manager"
+        "category": "Claude Code Config"
       },
       {
         "command": "ccm.deleteHook",
         "title": "Delete Hook",
-        "category": "Claude Code Manager"
+        "category": "Claude Code Config"
       },
       {
         "command": "ccm.duplicateHook",
         "title": "Duplicate Hook",
-        "category": "Claude Code Manager"
+        "category": "Claude Code Config"
       },
       {
         "command": "ccm.copyHookJson",
         "title": "Copy Hook JSON",
-        "category": "Claude Code Manager"
+        "category": "Claude Code Config"
       }
     ],
     "menus": {
@@ -361,7 +361,7 @@
       ]
     },
     "configuration": {
-      "title": "Claude Code Manager",
+      "title": "Claude Code Config",
       "properties": {
         "claudeCodeManager.autoRefresh": {
           "type": "boolean",
