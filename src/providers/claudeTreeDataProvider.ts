@@ -36,7 +36,7 @@ export class ClaudeTreeItem extends vscode.TreeItem {
 
       // Use different context value for SKILL.md files to restrict operations
       this.contextValue = isSkillFile ? 'skillFile' : 'claudeFile';
-      this.iconPath = this.getIconForType(claudeFile.type);
+      this.iconPath = this.getIconForType(claudeFile.type, claudeFile.color);
 
       // Make it clickable to open file
       this.command = {
@@ -81,7 +81,7 @@ export class ClaudeTreeItem extends vscode.TreeItem {
     }
   }
 
-  private getIconForType(type: ClaudeFileType): vscode.ThemeIcon {
+  private getIconForType(type: ClaudeFileType, color?: string): vscode.ThemeIcon {
     const iconMap: Record<ClaudeFileType, string> = {
       memory: 'book',
       command: 'terminal',
@@ -91,7 +91,15 @@ export class ClaudeTreeItem extends vscode.TreeItem {
       permission: 'shield',
       settings: 'gear',
     };
-    return new vscode.ThemeIcon(iconMap[type] || 'file');
+
+    const iconName = iconMap[type] || 'file';
+
+    // For sub-agents with a color, apply color to the icon
+    if (type === 'subAgent' && color) {
+      return new vscode.ThemeIcon(iconName, new vscode.ThemeColor(`charts.${color}`));
+    }
+
+    return new vscode.ThemeIcon(iconName);
   }
 
   static createSectionItem(
@@ -644,7 +652,7 @@ export class PermissionsTreeProvider implements vscode.TreeDataProvider<ClaudeTr
       if (allowRules.length > 0) {
         const allowHeader = new ClaudeTreeItem(
           `Allow (${allowRules.length})`,
-          vscode.TreeItemCollapsibleState.Expanded
+          vscode.TreeItemCollapsibleState.Collapsed
         );
         allowHeader.iconPath = new vscode.ThemeIcon('pass', new vscode.ThemeColor('testing.iconPassed'));
         allowHeader.children = this.groupRulesByTool(allowRules);
@@ -655,7 +663,7 @@ export class PermissionsTreeProvider implements vscode.TreeDataProvider<ClaudeTr
       if (askRules.length > 0) {
         const askHeader = new ClaudeTreeItem(
           `Ask (${askRules.length})`,
-          vscode.TreeItemCollapsibleState.Expanded
+          vscode.TreeItemCollapsibleState.Collapsed
         );
         askHeader.iconPath = new vscode.ThemeIcon('question', new vscode.ThemeColor('testing.iconQueued'));
         askHeader.children = this.groupRulesByTool(askRules);
@@ -666,7 +674,7 @@ export class PermissionsTreeProvider implements vscode.TreeDataProvider<ClaudeTr
       if (denyRules.length > 0) {
         const denyHeader = new ClaudeTreeItem(
           `Deny (${denyRules.length})`,
-          vscode.TreeItemCollapsibleState.Expanded
+          vscode.TreeItemCollapsibleState.Collapsed
         );
         denyHeader.iconPath = new vscode.ThemeIcon('error', new vscode.ThemeColor('testing.iconFailed'));
         denyHeader.children = this.groupRulesByTool(denyRules);
@@ -696,7 +704,7 @@ export class PermissionsTreeProvider implements vscode.TreeDataProvider<ClaudeTr
     for (const [tool, toolRules] of toolGroups.entries()) {
       const toolItem = new ClaudeTreeItem(
         `${tool} (${toolRules.length})`,
-        vscode.TreeItemCollapsibleState.Expanded,
+        vscode.TreeItemCollapsibleState.Collapsed,
         undefined,
         'folder'
       );
@@ -799,7 +807,7 @@ export class HooksTreeProvider implements vscode.TreeDataProvider<ClaudeTreeItem
       for (const [location, configs] of groupedByLocation) {
         const locationHeader = new ClaudeTreeItem(
           `${location} [${this.countHooks(configs)} hooks]`,
-          vscode.TreeItemCollapsibleState.Expanded
+          vscode.TreeItemCollapsibleState.Collapsed
         );
         locationHeader.iconPath = new vscode.ThemeIcon(
           location.includes('User') ? 'home' : location.includes('Project') ? 'root-folder' : 'file'
@@ -819,7 +827,7 @@ export class HooksTreeProvider implements vscode.TreeDataProvider<ClaudeTreeItem
         for (const [eventType, eventConfigs] of groupedByEvent) {
           const eventHeader = new ClaudeTreeItem(
             `${eventType} [${this.countHooks(eventConfigs)} hooks]`,
-            vscode.TreeItemCollapsibleState.Expanded
+            vscode.TreeItemCollapsibleState.Collapsed
           );
           eventHeader.iconPath = new vscode.ThemeIcon(this.getEventIcon(eventType));
 
@@ -830,7 +838,7 @@ export class HooksTreeProvider implements vscode.TreeDataProvider<ClaudeTreeItem
               const matcherLabel = matcher.matcher || '*';
               const matcherItem = new ClaudeTreeItem(
                 `Matcher: "${matcherLabel}" [${matcher.hooks.length} hooks]`,
-                vscode.TreeItemCollapsibleState.Expanded
+                vscode.TreeItemCollapsibleState.Collapsed
               );
               matcherItem.iconPath = new vscode.ThemeIcon('filter');
 

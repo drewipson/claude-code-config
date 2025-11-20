@@ -10,6 +10,7 @@ export interface ClaudeFile {
   type: ClaudeFileType;
   isDirectory?: boolean;
   parentType?: ClaudeFileType; // For folders, indicates what type of files they contain
+  color?: string; // For sub-agents, optional color from YAML frontmatter
 }
 
 export type ClaudeFileType =

@@ -59,7 +59,7 @@ export class FileDiscoveryService {
     for (const pattern of CLAUDE_MD_PATTERNS) {
       const globalPath = path.join(this.globalClaudePath, pattern);
       if (await this.fileExists(globalPath)) {
-        files.push(this.createClaudeFile(globalPath, 'memory', 'global', 'Global'));
+        files.push(await this.createClaudeFile(globalPath, 'memory', 'global', 'Global'));
         break;
       }
     }
@@ -70,7 +70,7 @@ export class FileDiscoveryService {
       for (const pattern of CLAUDE_MD_PATTERNS) {
         const projectPath = path.join(workspaceFolder.uri.fsPath, pattern);
         if (await this.fileExists(projectPath)) {
-          files.push(this.createClaudeFile(projectPath, 'memory', 'project', 'Project Root'));
+          files.push(await this.createClaudeFile(projectPath, 'memory', 'project', 'Project Root'));
           break;
         }
       }
@@ -79,7 +79,7 @@ export class FileDiscoveryService {
       for (const pattern of CLAUDE_MD_PATTERNS) {
         const dotClaudePath = path.join(workspaceFolder.uri.fsPath, '.claude', pattern);
         if (await this.fileExists(dotClaudePath)) {
-          files.push(this.createClaudeFile(dotClaudePath, 'memory', 'project', 'Project .claude'));
+          files.push(await this.createClaudeFile(dotClaudePath, 'memory', 'project', 'Project .claude'));
           break;
         }
       }
@@ -110,7 +110,7 @@ export class FileDiscoveryService {
     // Check for MCP config files in global
     const globalMcpConfig = path.join(this.globalClaudePath, 'mcp_servers.json');
     if (await this.fileExists(globalMcpConfig)) {
-      files.push(this.createClaudeFile(globalMcpConfig, 'mcp', 'global', 'Global'));
+      files.push(await this.createClaudeFile(globalMcpConfig, 'mcp', 'global', 'Global'));
     }
 
     // Check for project MCP config
@@ -118,7 +118,7 @@ export class FileDiscoveryService {
     if (projectClaudePath) {
       const projectMcpConfig = path.join(projectClaudePath, 'mcp_servers.json');
       if (await this.fileExists(projectMcpConfig)) {
-        files.push(this.createClaudeFile(projectMcpConfig, 'mcp', 'project', 'Project'));
+        files.push(await this.createClaudeFile(projectMcpConfig, 'mcp', 'project', 'Project'));
       }
     }
 
@@ -141,7 +141,7 @@ export class FileDiscoveryService {
     if (await this.directoryExists(globalDir)) {
       const globalFiles = await this.getFilesInDirectory(globalDir, extensions);
       for (const filePath of globalFiles) {
-        files.push(this.createClaudeFile(filePath, fileType, 'global', 'Global'));
+        files.push(await this.createClaudeFile(filePath, fileType, 'global', 'Global'));
       }
     }
 
@@ -152,7 +152,7 @@ export class FileDiscoveryService {
       if (await this.directoryExists(projectDir)) {
         const projectFiles = await this.getFilesInDirectory(projectDir, extensions);
         for (const filePath of projectFiles) {
-          files.push(this.createClaudeFile(filePath, fileType, 'project', 'Project'));
+          files.push(await this.createClaudeFile(filePath, fileType, 'project', 'Project'));
         }
       }
     }
@@ -172,7 +172,7 @@ export class FileDiscoveryService {
     if (await this.directoryExists(globalDir)) {
       const globalItems = await this.getFilesAndDirsInDirectory(globalDir, extensions);
       for (const item of globalItems) {
-        items.push(this.createClaudeFile(item.path, fileType, 'global', 'Global', item.isDirectory));
+        items.push(await this.createClaudeFile(item.path, fileType, 'global', 'Global', item.isDirectory));
       }
     }
 
@@ -183,7 +183,7 @@ export class FileDiscoveryService {
       if (await this.directoryExists(projectDir)) {
         const projectItems = await this.getFilesAndDirsInDirectory(projectDir, extensions);
         for (const item of projectItems) {
-          items.push(this.createClaudeFile(item.path, fileType, 'project', 'Project', item.isDirectory));
+          items.push(await this.createClaudeFile(item.path, fileType, 'project', 'Project', item.isDirectory));
         }
       }
     }
@@ -214,21 +214,21 @@ export class FileDiscoveryService {
         }
 
         const relativePath = path.relative(rootPath, path.dirname(uri.fsPath));
-        files.push(this.createClaudeFile(uri.fsPath, 'memory', 'nested', relativePath));
+        files.push(await this.createClaudeFile(uri.fsPath, 'memory', 'nested', relativePath));
       }
     }
 
     return files;
   }
 
-  private createClaudeFile(
+  private async createClaudeFile(
     filePath: string,
     type: ClaudeFileType,
     scope: LocationScope,
     scopeLabel: string,
     isDirectory?: boolean
-  ): ClaudeFile {
-    return {
+  ): Promise<ClaudeFile> {
+    const file: ClaudeFile = {
       name: path.basename(filePath),
       path: filePath,
       scope,
@@ -237,6 +237,21 @@ export class FileDiscoveryService {
       isDirectory,
       parentType: isDirectory ? type : undefined,
     };
+
+    // Parse color from sub-agent YAML frontmatter
+    if (type === 'subAgent' && !isDirectory) {
+      try {
+        const { parseYamlFrontmatter } = await import('../utils/yamlParser');
+        const frontmatter = await parseYamlFrontmatter(filePath);
+        if (frontmatter?.color) {
+          file.color = frontmatter.color;
+        }
+      } catch (error) {
+        // Silently ignore parsing errors
+      }
+    }
+
+    return file;
   }
 
   private async fileExists(filePath: string): Promise<boolean> {
