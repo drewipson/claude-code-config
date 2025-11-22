@@ -12,6 +12,8 @@ Visualize, organize, and control all your Claude Code settings from one interfac
 
 </div>
 
+![Claude Code Config Interface](images/Claude%20Code%20Config.png)
+
 ---
 
 ## Why did I build this?
@@ -136,8 +138,8 @@ Claude Code Config manages files in standard Claude Code locations:
 
 Configure Claude Code Config in VS Code settings:
 
-| Setting                              | Description                        | Default     |
-| ------------------------------------ | ---------------------------------- | ----------- |
+| Setting                             | Description                        | Default     |
+| ----------------------------------- | ---------------------------------- | ----------- |
 | `claudeCodeConfig.autoRefresh`      | Auto-refresh views on file changes | `true`      |
 | `claudeCodeConfig.globalClaudePath` | Custom global .claude directory    | `~/.claude` |
 
