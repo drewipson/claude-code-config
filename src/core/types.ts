@@ -18,7 +18,6 @@ export type ClaudeFileType =
   | 'command'      // Slash command files
   | 'skill'        // Skill files (SKILL.md)
   | 'subAgent'     // Sub-agent files
-  | 'mcp'          // MCP server configs
   | 'permission'   // Permission files
   | 'settings';    // Settings files
 
@@ -59,15 +58,6 @@ export interface DocumentationLink {
   icon: string;
 }
 
-export interface McpServer {
-  name: string;
-  type: 'http' | 'stdio' | 'sse';
-  location: 'User' | 'Project' | 'Managed';
-  configPath: string;
-  url?: string;
-  command?: string;
-  args?: string[];
-}
 
 export interface PermissionRule {
   type: 'allow' | 'ask' | 'deny';

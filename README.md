@@ -24,7 +24,7 @@ I built Claude Code Config because I use Claude Code extensively in my personal 
 
 ## ✨ What does Claude Code Config do?
 
-Claude Code Config changes how you work with [Claude Code](https://docs.anthropic.com/en/docs/claude-code/overview) configurations in VS Code. Instead of manually navigating directories and editing scattered files, get a unified command center that puts everything at your fingertips.
+Claude Code Config solves the problem of scattered configuration files by creating a single command center for managing all Claude Code settings. Instead of navigating between `~/.claude/` and `.claude/` directories, users can visualize, create, edit, and organize everything from a VS Code sidebar.
 
 **Perfect for developers who want to:**
 
@@ -87,8 +87,8 @@ Download "Claude Code Config" from the VS Code Marketplace
 #### From Source
 
 ```bash
-git clone https://github.com/your-username/claude-code-manager.git
-cd claude-code-manager
+git clone https://github.com/your-username/claude-code-config.git
+cd claude-code-config
 npm install
 npm run build
 # Press F5 in VS Code to launch Extension Development Host
@@ -138,8 +138,8 @@ Configure Claude Code Config in VS Code settings:
 
 | Setting                              | Description                        | Default     |
 | ------------------------------------ | ---------------------------------- | ----------- |
-| `claudeCodeManager.autoRefresh`      | Auto-refresh views on file changes | `true`      |
-| `claudeCodeManager.globalClaudePath` | Custom global .claude directory    | `~/.claude` |
+| `claudeCodeConfig.autoRefresh`      | Auto-refresh views on file changes | `true`      |
+| `claudeCodeConfig.globalClaudePath` | Custom global .claude directory    | `~/.claude` |
 
 ### Available Commands
 

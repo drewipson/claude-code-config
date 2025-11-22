@@ -2,7 +2,7 @@ import * as os from 'os';
 import * as path from 'path';
 import { DocumentationLink } from './types';
 
-export const EXTENSION_ID = 'claude-code-manager';
+export const EXTENSION_ID = 'claude-code-config';
 export const EXTENSION_NAME = 'Claude Code Config';
 
 // Default paths
@@ -12,7 +12,6 @@ export const DEFAULT_GLOBAL_CLAUDE_PATH = path.join(os.homedir(), '.claude');
 export const CLAUDE_MD_PATTERNS = ['CLAUDE.md', 'claude.md'];
 export const SKILLS_DIR = 'skills';
 export const AGENTS_DIR = 'agents';
-export const MCP_DIR = 'mcp-servers';
 export const COMMANDS_DIR = 'commands';
 
 // File extensions
@@ -25,7 +24,6 @@ export const VIEW_IDS = {
   commands: 'ccm.commands',
   skills: 'ccm.skills',
   subAgents: 'ccm.subAgents',
-  mcpServers: 'ccm.mcpServers',
   permissions: 'ccm.permissions',
   hooks: 'ccm.hooks',
   documentation: 'ccm.documentation',
@@ -37,6 +35,7 @@ export const COMMAND_IDS = {
   openFile: 'ccm.openFile',
   moveToGlobal: 'ccm.moveToGlobal',
   moveToProject: 'ccm.moveToProject',
+  moveToFolder: 'ccm.moveToFolder',
   revealInFinder: 'ccm.revealInFinder',
   copyPath: 'ccm.copyPath',
   deleteFile: 'ccm.deleteFile',
@@ -53,7 +52,6 @@ export const COMMAND_IDS = {
   createSkill: 'ccm.createSkill',
   createSubAgent: 'ccm.createSubAgent',
   openSettingsFile: 'ccm.openSettingsFile',
-  viewMcpConfig: 'ccm.viewMcpConfig',
   createHook: 'ccm.createHook',
   editHook: 'ccm.editHook',
   deleteHook: 'ccm.deleteHook',
@@ -82,12 +80,6 @@ export const DOCUMENTATION_LINKS: DocumentationLink[] = [
     icon: 'hubot',
   },
   {
-    title: 'MCP Servers',
-    url: 'https://code.claude.com/docs/en/mcp',
-    description: 'Model Context Protocol setup',
-    icon: 'plug',
-  },
-  {
     title: 'Settings',
     url: 'https://code.claude.com/docs/en/settings',
     description: 'Configure permissions and options',
@@ -102,7 +94,6 @@ export const ICONS = {
   command: 'terminal',
   skill: 'lightbulb',
   subAgent: 'robot',
-  mcp: 'plug',
   permission: 'shield',
   settings: 'gear',
   folder: 'folder',

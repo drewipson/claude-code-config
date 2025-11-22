@@ -44,6 +44,46 @@ export class FileOperationsService {
     return this.moveFile(claudeFile.path, targetPath, 'project');
   }
 
+  async moveToFolder(claudeFile: ClaudeFile, targetFolderPath: string): Promise<boolean> {
+    // Determine the scope of the target folder
+    const globalPath = this.fileDiscoveryService.getGlobalClaudePath();
+    const projectPath = this.fileDiscoveryService.getProjectClaudePath();
+
+    let targetScope: 'global' | 'project';
+    if (targetFolderPath.startsWith(globalPath)) {
+      targetScope = 'global';
+    } else if (projectPath && targetFolderPath.startsWith(projectPath)) {
+      targetScope = 'project';
+    } else {
+      vscode.window.showErrorMessage('Invalid target folder.');
+      return false;
+    }
+
+    // Validate that we're not moving across scopes
+    if (claudeFile.scope !== targetScope) {
+      vscode.window.showErrorMessage(
+        `Cannot move files between scopes. Use "Move to ${targetScope === 'global' ? 'Global' : 'Project'}" instead.`
+      );
+      return false;
+    }
+
+    // Check if target folder exists
+    try {
+      const stat = await fs.promises.stat(targetFolderPath);
+      if (!stat.isDirectory()) {
+        vscode.window.showErrorMessage('Target is not a folder.');
+        return false;
+      }
+    } catch {
+      vscode.window.showErrorMessage('Target folder does not exist.');
+      return false;
+    }
+
+    const targetPath = path.join(targetFolderPath, claudeFile.name);
+
+    return this.moveFile(claudeFile.path, targetPath, targetScope);
+  }
+
   private async moveFile(
     sourcePath: string,
     targetPath: string,
@@ -107,7 +147,6 @@ export class FileOperationsService {
       command: COMMANDS_DIR,
       skill: SKILLS_DIR,
       subAgent: AGENTS_DIR,
-      mcp: MCP_DIR,
     };
 
     const subDir = dirMap[fileType];

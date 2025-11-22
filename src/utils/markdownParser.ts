@@ -11,20 +11,31 @@ export async function parseMarkdownSections(filePath: string): Promise<MarkdownS
     const content = await fs.promises.readFile(filePath, 'utf-8');
     const lines = content.split('\n');
     const sections: MarkdownSection[] = [];
+    let inCodeBlock = false;
 
     for (let i = 0; i < lines.length; i++) {
       const line = lines[i];
-      const match = line.match(/^(#{1,6})\s+(.+)$/);
 
-      if (match) {
-        const level = match[1].length;
-        const title = match[2].trim();
+      // Check for code block markers (```)
+      if (line.trim().startsWith('```')) {
+        inCodeBlock = !inCodeBlock;
+        continue;
+      }
 
-        sections.push({
-          title,
-          level,
-          lineNumber: i + 1, // 1-based line numbers
-        });
+      // Only process headings if NOT in code block
+      if (!inCodeBlock) {
+        const match = line.match(/^(#{1,6})\s+(.+)$/);
+
+        if (match) {
+          const level = match[1].length;
+          const title = match[2].trim();
+
+          sections.push({
+            title,
+            level,
+            lineNumber: i + 1, // 1-based line numbers
+          });
+        }
       }
     }
 

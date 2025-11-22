@@ -8,7 +8,7 @@ export class HooksService {
   private globalClaudePath: string;
 
   constructor() {
-    const config = vscode.workspace.getConfiguration('claudeCodeManager');
+    const config = vscode.workspace.getConfiguration('claudeCodeConfig');
     this.globalClaudePath = config.get<string>('globalClaudePath') || DEFAULT_GLOBAL_CLAUDE_PATH;
   }
 

@@ -2,7 +2,6 @@ import * as vscode from 'vscode';
 import * as path from 'path';
 import { FileDiscoveryService } from './services/fileDiscoveryService';
 import { FileOperationsService } from './services/fileOperationsService';
-import { McpService } from './services/mcpService';
 import { PermissionsService } from './services/permissionsService';
 import { HooksService } from './services/hooksService';
 import {
@@ -10,13 +9,13 @@ import {
   CommandsTreeProvider,
   SkillsTreeProvider,
   SubAgentsTreeProvider,
-  McpServersTreeProvider,
   PermissionsTreeProvider,
   HooksTreeProvider,
   DocumentationTreeProvider,
   ClaudeTreeItem,
 } from './providers/claudeTreeDataProvider';
 import { COMMAND_IDS, VIEW_IDS } from './core/constants';
+import type { ClaudeFile } from './core/types';
 
 let fileWatcher: vscode.FileSystemWatcher | undefined;
 
@@ -26,7 +25,6 @@ export function activate(context: vscode.ExtensionContext) {
   // Initialize services
   const fileDiscoveryService = new FileDiscoveryService();
   const fileOperationsService = new FileOperationsService(fileDiscoveryService);
-  const mcpService = new McpService();
   const permissionsService = new PermissionsService();
   const hooksService = new HooksService();
 
@@ -35,7 +33,6 @@ export function activate(context: vscode.ExtensionContext) {
   const commandsProvider = new CommandsTreeProvider(fileDiscoveryService);
   const skillsProvider = new SkillsTreeProvider(fileDiscoveryService);
   const subAgentsProvider = new SubAgentsTreeProvider(fileDiscoveryService);
-  const mcpServersProvider = new McpServersTreeProvider(mcpService);
   const permissionsProvider = new PermissionsTreeProvider(permissionsService);
   const hooksProvider = new HooksTreeProvider(hooksService);
   const documentationProvider = new DocumentationTreeProvider();
@@ -46,7 +43,6 @@ export function activate(context: vscode.ExtensionContext) {
     vscode.window.registerTreeDataProvider(VIEW_IDS.commands, commandsProvider),
     vscode.window.registerTreeDataProvider(VIEW_IDS.skills, skillsProvider),
     vscode.window.registerTreeDataProvider(VIEW_IDS.subAgents, subAgentsProvider),
-    vscode.window.registerTreeDataProvider(VIEW_IDS.mcpServers, mcpServersProvider),
     vscode.window.registerTreeDataProvider(VIEW_IDS.permissions, permissionsProvider),
     vscode.window.registerTreeDataProvider(VIEW_IDS.hooks, hooksProvider),
     vscode.window.registerTreeDataProvider(VIEW_IDS.documentation, documentationProvider)
@@ -58,7 +54,6 @@ export function activate(context: vscode.ExtensionContext) {
     commandsProvider.refresh();
     skillsProvider.refresh();
     subAgentsProvider.refresh();
-    mcpServersProvider.refresh();
     permissionsProvider.refresh();
     hooksProvider.refresh();
   };
@@ -109,6 +104,60 @@ export function activate(context: vscode.ExtensionContext) {
     vscode.commands.registerCommand(COMMAND_IDS.moveToProject, async (item: ClaudeTreeItem) => {
       if (item?.claudeFile) {
         const success = await fileOperationsService.moveToProject(item.claudeFile);
+        if (success) {
+          refreshAll();
+        }
+      }
+    }),
+
+    // Move to folder command
+    vscode.commands.registerCommand(COMMAND_IDS.moveToFolder, async (item: ClaudeTreeItem) => {
+      if (!item?.claudeFile) {
+        return;
+      }
+
+      // Get files of the same type
+      let allFiles: ClaudeFile[] = [];
+      switch (item.claudeFile.type) {
+        case 'command':
+          allFiles = await fileDiscoveryService.discoverCommands();
+          break;
+        case 'subAgent':
+          allFiles = await fileDiscoveryService.discoverSubAgents();
+          break;
+        case 'skill':
+          allFiles = await fileDiscoveryService.discoverSkills();
+          break;
+        default:
+          vscode.window.showInformationMessage('This file type cannot be moved to folders.');
+          return;
+      }
+
+      // Filter to only folders in the same scope
+      const folders = allFiles.filter(file =>
+        file.isDirectory &&
+        file.scope === item.claudeFile!.scope &&
+        file.path !== item.claudeFile!.path // Exclude the file's current parent
+      );
+
+      if (folders.length === 0) {
+        vscode.window.showInformationMessage('No folders available. Create a folder first.');
+        return;
+      }
+
+      // Create quick pick items
+      const folderItems = folders.map(folder => ({
+        label: folder.name,
+        description: folder.path,
+        folder: folder
+      }));
+
+      const selected = await vscode.window.showQuickPick(folderItems, {
+        placeHolder: 'Select target folder'
+      });
+
+      if (selected) {
+        const success = await fileOperationsService.moveToFolder(item.claudeFile, selected.folder.path);
         if (success) {
           refreshAll();
         }
@@ -888,7 +937,7 @@ export function activate(context: vscode.ExtensionContext) {
   );
 
   // Setup file watcher for auto-refresh
-  const config = vscode.workspace.getConfiguration('claudeCodeManager');
+  const config = vscode.workspace.getConfiguration('claudeCodeConfig');
   if (config.get<boolean>('autoRefresh', true)) {
     setupFileWatcher(context, refreshAll);
   }
@@ -896,9 +945,9 @@ export function activate(context: vscode.ExtensionContext) {
   // Listen for configuration changes
   context.subscriptions.push(
     vscode.workspace.onDidChangeConfiguration((e) => {
-      if (e.affectsConfiguration('claudeCodeManager.autoRefresh')) {
+      if (e.affectsConfiguration('claudeCodeConfig.autoRefresh')) {
         const autoRefresh = vscode.workspace
-          .getConfiguration('claudeCodeManager')
+          .getConfiguration('claudeCodeConfig')
           .get<boolean>('autoRefresh', true);
 
         if (autoRefresh) {

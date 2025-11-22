@@ -1,9 +1,13 @@
 {
-  "name": "claude-code-manager",
+  "name": "claude-code-config",
   "displayName": "Claude Code Config",
   "description": "Manage and configure Claude Code settings with powerful tools and analytics",
-  "version": "0.1.0",
-  "publisher": "claude-code-manager",
+  "version": "1.0.0",
+  "publisher": "your-publisher",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-username/claude-code-config"
+  },
   "engines": {
     "vscode": "^1.85.0"
   },
@@ -31,14 +35,14 @@
     "viewsContainers": {
       "activitybar": [
         {
-          "id": "claude-code-manager",
+          "id": "claude-code-config",
           "title": "Claude Code Config",
           "icon": "resources/icons/claude-logo.svg"
         }
       ]
     },
     "views": {
-      "claude-code-manager": [
+      "claude-code-config": [
         {
           "id": "ccm.memories",
           "name": "Memories"
@@ -54,10 +58,6 @@
         {
           "id": "ccm.subAgents",
           "name": "Sub-Agents"
-        },
-        {
-          "id": "ccm.mcpServers",
-          "name": "MCP Servers"
         },
         {
           "id": "ccm.permissions",
@@ -98,6 +98,11 @@
       {
         "command": "ccm.moveToProject",
         "title": "Move to Project",
+        "category": "Claude Code Config"
+      },
+      {
+        "command": "ccm.moveToFolder",
+        "title": "Move to Folder",
         "category": "Claude Code Config"
       },
       {
@@ -180,11 +185,6 @@
       {
         "command": "ccm.openSettingsFile",
         "title": "Open Settings File",
-        "category": "Claude Code Config"
-      },
-      {
-        "command": "ccm.viewMcpConfig",
-        "title": "View MCP Configuration",
         "category": "Claude Code Config"
       },
       {
@@ -274,6 +274,11 @@
           "group": "move@2"
         },
         {
+          "command": "ccm.moveToFolder",
+          "when": "viewItem == claudeFile",
+          "group": "move@3"
+        },
+        {
           "command": "ccm.renameFile",
           "when": "viewItem == claudeFile",
           "group": "edit@1"
@@ -302,6 +307,11 @@
           "command": "ccm.moveToProject",
           "when": "viewItem == claudeFolder && ccm.canMoveToProject",
           "group": "move@2"
+        },
+        {
+          "command": "ccm.moveToFolder",
+          "when": "viewItem == claudeFolder",
+          "group": "move@3"
         },
         {
           "command": "ccm.renameFile",
@@ -363,12 +373,12 @@
     "configuration": {
       "title": "Claude Code Config",
       "properties": {
-        "claudeCodeManager.autoRefresh": {
+        "claudeCodeConfig.autoRefresh": {
           "type": "boolean",
           "default": true,
           "description": "Automatically refresh views on file changes"
         },
-        "claudeCodeManager.globalClaudePath": {
+        "claudeCodeConfig.globalClaudePath": {
           "type": "string",
           "default": "",
           "description": "Custom path to global .claude directory (default: ~/.claude)"

@@ -8,7 +8,6 @@ import {
   COMMANDS_DIR,
   SKILLS_DIR,
   AGENTS_DIR,
-  MCP_DIR,
   MARKDOWN_EXTENSIONS,
   JSON_EXTENSIONS,
 } from '../core/constants';
@@ -17,7 +16,7 @@ export class FileDiscoveryService {
   private globalClaudePath: string;
 
   constructor() {
-    const config = vscode.workspace.getConfiguration('claudeCodeManager');
+    const config = vscode.workspace.getConfiguration('claudeCodeConfig');
     this.globalClaudePath = config.get<string>('globalClaudePath') || DEFAULT_GLOBAL_CLAUDE_PATH;
   }
 
@@ -38,17 +37,17 @@ export class FileDiscoveryService {
     commands: ClaudeFile[];
     skills: ClaudeFile[];
     subAgents: ClaudeFile[];
-    mcpServers: ClaudeFile[];
+    
   }> {
-    const [memories, commands, skills, subAgents, mcpServers] = await Promise.all([
+    const [memories, commands, skills, subAgents] = await Promise.all([
       this.discoverMemories(),
       this.discoverCommands(),
       this.discoverSkills(),
       this.discoverSubAgents(),
-      this.discoverMcpServers(),
+      
     ]);
 
-    return { memories, commands, skills, subAgents, mcpServers };
+    return { memories, commands, skills, subAgents };
   }
 
   async discoverMemories(): Promise<ClaudeFile[]> {
@@ -104,30 +103,6 @@ export class FileDiscoveryService {
     return this.discoverFilesAndDirsInDir(AGENTS_DIR, 'subAgent', MARKDOWN_EXTENSIONS);
   }
 
-  async discoverMcpServers(): Promise<ClaudeFile[]> {
-    const files: ClaudeFile[] = [];
-
-    // Check for MCP config files in global
-    const globalMcpConfig = path.join(this.globalClaudePath, 'mcp_servers.json');
-    if (await this.fileExists(globalMcpConfig)) {
-      files.push(await this.createClaudeFile(globalMcpConfig, 'mcp', 'global', 'Global'));
-    }
-
-    // Check for project MCP config
-    const projectClaudePath = this.getProjectClaudePath();
-    if (projectClaudePath) {
-      const projectMcpConfig = path.join(projectClaudePath, 'mcp_servers.json');
-      if (await this.fileExists(projectMcpConfig)) {
-        files.push(await this.createClaudeFile(projectMcpConfig, 'mcp', 'project', 'Project'));
-      }
-    }
-
-    // Also check for MCP servers directory
-    const mcpDirFiles = await this.discoverFilesInDir(MCP_DIR, 'mcp', [...MARKDOWN_EXTENSIONS, ...JSON_EXTENSIONS]);
-    files.push(...mcpDirFiles);
-
-    return files;
-  }
 
   private async discoverFilesInDir(
     dirName: string,
