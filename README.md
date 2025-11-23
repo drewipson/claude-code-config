@@ -44,11 +44,40 @@ Claude Code Config solves the problem of scattered configuration files by creati
 All your Claude Code configurations organized in one beautiful tree view:
 
 - **Memories** (CLAUDE.md) - Your project context and persistent knowledge with drill down into specific markdown levels.
+
+  ![Memories Management](images/manage_memories.png)
+
+  *Navigate through your CLAUDE.md files by section - expand any heading to jump directly to that content.*
+
 - **Commands** - Custom slash commands for your workflow
+
+  ![Commands Management](images/manage_commands.png)
+
+  *Explore command structure with expandable sections showing all H1, H2, and H3 headings for quick navigation.*
+
 - **Skills** - Reusable AI capabilities and specialized behaviors
+
+  ![Skills Management](images/manage_skills.png)
+
+  *Organize skills in folders - each skill folder contains a SKILL.md file with specialized AI capabilities.*
+
 - **Sub-Agents** - Task-specific agents with custom prompts (color coding included)
+
+  ![Sub-Agents Management](images/manage_agents.png)
+
+  *Organize agents in folders and see them color-coded based on their YAML frontmatter configuration.*
+
 - **Hooks** - Create, edit, delete with a GUI interface for quick adding
+
+  ![Hooks Management](images/manage_hooks.png)
+  
+  *View all hooks organized by location (Global/Project), event type, and execution context.*
+
 - **Permissions** - Fine-grained control over tool access
+
+  ![Permissions Management](images/manage_permissions.png)
+
+  *Browse all permission rules organized by type (Allow/Ask/Deny) and tool - see exactly what Claude Code can access.*
 
 ### ⚡ **Powerful Tools**
 
@@ -57,7 +86,7 @@ All your Claude Code configurations organized in one beautiful tree view:
 - **Folder Organization** - Create logical groupings for commands and sub-agents
 - **Live Sync** - Auto-refresh when files change
 - **Color-Coded Agents** - Sub-agents display in their configured colors for easy identification
-- **Quick Links** to offical Claude Code documentation for configs and setup.
+- **Quick Links** to official Claude Code documentation for configs and setup.
 
 ### ↩️ **Hooks Management Interface**
 
