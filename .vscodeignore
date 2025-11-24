@@ -1,0 +1,42 @@
+# Source files
+src/
+*.ts
+!dist/**
+
+# Git
+.git/
+.gitignore
+
+# GitHub
+.github/
+
+# VS Code workspace
+.vscode/
+
+# Claude config
+.claude/
+
+# Node modules (handled by vsce)
+node_modules/
+
+# Build config
+esbuild.js
+tsconfig.json
+.eslintrc.json
+
+# Release please config
+release-please-config.json
+.release-please-manifest.json
+
+# Documentation (keep README and LICENSE)
+MIGRATION.md
+
+# Source maps
+*.map
+
+# Test files
+**/*.test.ts
+**/*.spec.ts
+
+# Package lock (not needed in extension)
+package-lock.json

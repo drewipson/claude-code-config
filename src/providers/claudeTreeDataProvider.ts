@@ -1,8 +1,7 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
-import { ClaudeFile, ClaudeFileType, McpServer, PermissionRule, HookConfiguration } from '../core/types';
+import { ClaudeFile, ClaudeFileType, PermissionRule, HookConfiguration, Hook, HookTreeItemData } from '../core/types';
 import { FileDiscoveryService } from '../services/fileDiscoveryService';
-import { McpService } from '../services/mcpService';
 import { PermissionsService } from '../services/permissionsService';
 import { HooksService } from '../services/hooksService';
 import { DOCUMENTATION_LINKS } from '../core/constants';
@@ -814,7 +813,7 @@ export class HooksTreeProvider implements vscode.TreeDataProvider<ClaudeTreeItem
   }
 
   private createHookItem(
-    hook: any,
+    hook: Hook,
     hookIndex: number,
     config: HookConfiguration,
     matcher: HookMatcher,
@@ -865,7 +864,7 @@ export class HooksTreeProvider implements vscode.TreeDataProvider<ClaudeTreeItem
     );
 
     // Store metadata for commands
-    (item as any).hookData = {
+    (item as ClaudeTreeItem & { hookData: HookTreeItemData }).hookData = {
       configPath: config.configPath,
       eventType: config.eventType,
       matcherIndex,

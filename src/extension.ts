@@ -15,7 +15,7 @@ import {
   ClaudeTreeItem,
 } from './providers/claudeTreeDataProvider';
 import { COMMAND_IDS, VIEW_IDS } from './core/constants';
-import type { ClaudeFile } from './core/types';
+import type { ClaudeFile, HookEventType, HookTreeItemData } from './core/types';
 
 let fileWatcher: vscode.FileSystemWatcher | undefined;
 
@@ -680,7 +680,7 @@ export function activate(context: vscode.ExtensionContext) {
     vscode.commands.registerCommand(COMMAND_IDS.createHook, async () => {
       try {
         // Import constants
-        const { HOOK_EVENT_TYPES, HOOK_EVENT_DESCRIPTIONS, TOOL_TYPES, DEFAULT_HOOK_TIMEOUT } = await import('./core/constants');
+        const { HOOK_EVENT_TYPES, HOOK_EVENT_DESCRIPTIONS, DEFAULT_HOOK_TIMEOUT } = await import('./core/constants');
 
         // Step 1: Select scope
         const scopeChoice = await vscode.window.showQuickPick(
@@ -690,7 +690,9 @@ export function activate(context: vscode.ExtensionContext) {
           ],
           { placeHolder: 'Select scope for the hook' }
         );
-        if (!scopeChoice) return;
+        if (!scopeChoice) {
+          return;
+        }
 
         // Step 2: Select event type
         const eventType = await vscode.window.showQuickPick(
@@ -700,7 +702,9 @@ export function activate(context: vscode.ExtensionContext) {
           })),
           { placeHolder: 'Select hook event type' }
         );
-        if (!eventType) return;
+        if (!eventType) {
+          return;
+        }
 
         // Step 3: Enter matcher pattern
         const matcher = await vscode.window.showInputBox({
@@ -708,7 +712,9 @@ export function activate(context: vscode.ExtensionContext) {
           value: '*',
           placeHolder: 'Tool matcher pattern (optional)',
         });
-        if (matcher === undefined) return; // User cancelled
+        if (matcher === undefined) {
+          return; // User cancelled
+        }
 
         // Step 4: Select hook type
         const hookTypeChoice = await vscode.window.showQuickPick(
@@ -718,7 +724,9 @@ export function activate(context: vscode.ExtensionContext) {
           ],
           { placeHolder: 'Select hook type' }
         );
-        if (!hookTypeChoice) return;
+        if (!hookTypeChoice) {
+          return;
+        }
 
         // Step 5: Enter command or prompt
         const content = await vscode.window.showInputBox({
@@ -732,7 +740,9 @@ export function activate(context: vscode.ExtensionContext) {
             return value.trim() ? null : 'Content cannot be empty';
           },
         });
-        if (!content) return;
+        if (!content) {
+          return;
+        }
 
         // Step 6: Enter timeout (optional)
         const timeoutStr = await vscode.window.showInputBox({
@@ -740,7 +750,9 @@ export function activate(context: vscode.ExtensionContext) {
           value: '60',
           placeHolder: '60',
           validateInput: (value) => {
-            if (!value.trim()) return null; // Allow empty for default
+            if (!value.trim()) {
+              return null; // Allow empty for default
+            }
             const num = parseInt(value);
             return isNaN(num) || num <= 0 ? 'Must be a positive number' : null;
           },
@@ -763,12 +775,14 @@ export function activate(context: vscode.ExtensionContext) {
           'No'
         );
 
-        if (confirm !== 'Yes') return;
+        if (confirm !== 'Yes') {
+          return;
+        }
 
         // Add the hook
         const success = await hooksService.addHook(
           scopeChoice.value,
-          eventType.label as any,
+          eventType.label as HookEventType,
           matcher,
           hook
         );
@@ -783,7 +797,7 @@ export function activate(context: vscode.ExtensionContext) {
     }),
 
     // Delete hook command
-    vscode.commands.registerCommand(COMMAND_IDS.deleteHook, async (item: any) => {
+    vscode.commands.registerCommand(COMMAND_IDS.deleteHook, async (item: ClaudeTreeItem & { hookData?: HookTreeItemData }) => {
       if (!item?.hookData) {
         vscode.window.showErrorMessage('Invalid hook item.');
         return;
@@ -796,7 +810,9 @@ export function activate(context: vscode.ExtensionContext) {
         'No'
       );
 
-      if (confirm !== 'Yes') return;
+      if (confirm !== 'Yes') {
+        return;
+      }
 
       try {
         const { configPath, eventType, matcherIndex, hookIndex } = item.hookData;
@@ -812,7 +828,7 @@ export function activate(context: vscode.ExtensionContext) {
     }),
 
     // Edit hook command
-    vscode.commands.registerCommand(COMMAND_IDS.editHook, async (item: any) => {
+    vscode.commands.registerCommand(COMMAND_IDS.editHook, async (item: ClaudeTreeItem & { hookData?: HookTreeItemData }) => {
       if (!item?.hookData) {
         vscode.window.showErrorMessage('Invalid hook item.');
         return;
@@ -832,7 +848,9 @@ export function activate(context: vscode.ExtensionContext) {
           },
         });
 
-        if (!newContent) return;
+        if (!newContent) {
+          return;
+        }
 
         // Edit timeout
         const currentTimeout = hook.timeout || DEFAULT_HOOK_TIMEOUT;
@@ -845,7 +863,9 @@ export function activate(context: vscode.ExtensionContext) {
           },
         });
 
-        if (!timeoutStr) return;
+        if (!timeoutStr) {
+          return;
+        }
 
         const newTimeout = parseInt(timeoutStr);
 
@@ -874,7 +894,7 @@ export function activate(context: vscode.ExtensionContext) {
     }),
 
     // Copy hook JSON command
-    vscode.commands.registerCommand(COMMAND_IDS.copyHookJson, async (item: any) => {
+    vscode.commands.registerCommand(COMMAND_IDS.copyHookJson, async (item: ClaudeTreeItem & { hookData?: HookTreeItemData }) => {
       if (!item?.hookData) {
         vscode.window.showErrorMessage('Invalid hook item.');
         return;
@@ -891,7 +911,7 @@ export function activate(context: vscode.ExtensionContext) {
     }),
 
     // Duplicate hook command
-    vscode.commands.registerCommand(COMMAND_IDS.duplicateHook, async (item: any) => {
+    vscode.commands.registerCommand(COMMAND_IDS.duplicateHook, async (item: ClaudeTreeItem & { hookData?: HookTreeItemData }) => {
       if (!item?.hookData) {
         vscode.window.showErrorMessage('Invalid hook item.');
         return;
@@ -908,7 +928,9 @@ export function activate(context: vscode.ExtensionContext) {
           ],
           { placeHolder: 'Select destination scope' }
         );
-        if (!scopeChoice) return;
+        if (!scopeChoice) {
+          return;
+        }
 
         // Ask for matcher
         const matcher = await vscode.window.showInputBox({
@@ -916,7 +938,9 @@ export function activate(context: vscode.ExtensionContext) {
           value: '*',
           placeHolder: 'Tool matcher pattern (optional)',
         });
-        if (matcher === undefined) return; // User cancelled
+        if (matcher === undefined) {
+          return; // User cancelled
+        }
 
         // Duplicate the hook
         const success = await hooksService.addHook(

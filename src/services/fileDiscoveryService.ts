@@ -9,7 +9,6 @@ import {
   SKILLS_DIR,
   AGENTS_DIR,
   MARKDOWN_EXTENSIONS,
-  JSON_EXTENSIONS,
 } from '../core/constants';
 
 export class FileDiscoveryService {

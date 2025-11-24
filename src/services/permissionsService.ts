@@ -130,7 +130,7 @@ export class PermissionsService {
     pattern: string
   ): { tool: string; pattern: string } | null {
     // Pattern format: "Tool(pattern)" or "Tool:pattern"
-    const match = pattern.match(/^(\w+)[\(:](.*?)[\)]?$/);
+    const match = pattern.match(/^(\w+)[(:](.*?)[)]?$/);
     if (match) {
       return {
         tool: match[1],
