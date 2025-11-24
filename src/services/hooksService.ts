@@ -4,6 +4,11 @@ import { HookConfiguration, HookEventType, HookMatcher, Hook } from '../core/typ
 import { DEFAULT_GLOBAL_CLAUDE_PATH } from '../core/constants';
 import * as vscode from 'vscode';
 
+interface SettingsFile {
+  hooks?: Record<string, HookMatcher[]>;
+  [key: string]: unknown;
+}
+
 export class HooksService {
   private globalClaudePath: string;
 
@@ -109,10 +114,10 @@ export class HooksService {
       }
 
       // Read existing settings or create empty object
-      let settings: any = {};
+      let settings: SettingsFile = {};
       if (await this.fileExists(settingsPath)) {
         const content = await fs.promises.readFile(settingsPath, 'utf-8');
-        settings = JSON.parse(content);
+        settings = JSON.parse(content) as SettingsFile;
       }
 
       // Initialize hooks structure if needed
@@ -124,7 +129,7 @@ export class HooksService {
       }
 
       // Find or create matcher entry
-      let matcherEntry = settings.hooks[eventType].find((m: any) => m.matcher === matcher);
+      let matcherEntry = settings.hooks[eventType].find((m: HookMatcher) => m.matcher === matcher);
       if (!matcherEntry) {
         matcherEntry = { matcher, hooks: [] };
         settings.hooks[eventType].push(matcherEntry);

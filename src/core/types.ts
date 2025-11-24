@@ -97,3 +97,11 @@ export interface HookConfiguration {
   location: string; // Which settings file it's from
   configPath: string;
 }
+
+export interface HookTreeItemData {
+  configPath: string;
+  eventType: HookEventType;
+  matcherIndex: number;
+  hookIndex: number;
+  hook: Hook;
+}

@@ -7,7 +7,6 @@ import {
   COMMANDS_DIR,
   SKILLS_DIR,
   AGENTS_DIR,
-  MCP_DIR,
 } from '../core/constants';
 
 export class FileOperationsService {

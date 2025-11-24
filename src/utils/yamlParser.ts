@@ -3,7 +3,7 @@ import * as fs from 'fs';
 export interface YamlFrontmatter {
   description?: string;
   name?: string;
-  [key: string]: any;
+  [key: string]: string | number | boolean | undefined;
 }
 
 export async function parseYamlFrontmatter(filePath: string): Promise<YamlFrontmatter | null> {
