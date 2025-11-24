@@ -24,22 +24,22 @@ However, these configs can be scattered all over the place. I would forget where
 
 I built Claude Code Config because I use Claude Code extensively in my personal and professional projects and wanted quick insight into how Claude is set up for a given project.
 
-## ✨ What does Claude Code Config do?
+##  What does Claude Code Config do?
 
 Claude Code Config solves the problem of scattered configuration files by creating a single command center for managing all Claude Code settings. Instead of navigating between `~/.claude/` and `.claude/` directories, users can visualize, create, edit, and organize everything from a VS Code sidebar.
 
 **Perfect for developers who want to:**
 
-- ⚙️ Manage Claude Code settings across your global, project, and local configurations.
-- 🛠️ Quickly add agents, hooks, skills, commands with templates directly from Claude docs so you set them up right every time.
-- ↔️ Move a skill, hook, agent from a local project config to your global set up with one click so your other projects benefit from that skill.
-- 🔒 Quickly see what can and can't be executed by Claude Code Permissions
+-  Manage Claude Code settings across your global, project, and local configurations.
+- Quickly add agents, hooks, skills, commands with templates directly from Claude docs so you set them up right every time.
+- Move a skill, hook, agent from a local project config to your global set up with one click so your other projects benefit from that skill.
+- Quickly see what can and can't be executed by Claude Code Permissions
 
 ---
 
 ## 🎯 Key Features
 
-### 📁 **Unified Configuration Management**
+###  **Unified Configuration Management**
 
 All your Claude Code configurations organized in one beautiful tree view:
 
@@ -47,39 +47,39 @@ All your Claude Code configurations organized in one beautiful tree view:
 
   ![Memories Management](images/manage_memories.png)
 
-  *Navigate through your CLAUDE.md files by section - expand any heading to jump directly to that content.*
+  _Navigate through your CLAUDE.md files by section - expand any heading to jump directly to that content._
 
 - **Commands** - Custom slash commands for your workflow
 
   ![Commands Management](images/manage_commands.png)
 
-  *Explore command structure with expandable sections showing all H1, H2, and H3 headings for quick navigation.*
+  _Explore command structure with expandable sections showing all H1, H2, and H3 headings for quick navigation._
 
 - **Skills** - Reusable AI capabilities and specialized behaviors
 
   ![Skills Management](images/manage_skills.png)
 
-  *Organize skills in folders - each skill folder contains a SKILL.md file with specialized AI capabilities.*
+  _Organize skills in folders - each skill folder contains a SKILL.md file with specialized AI capabilities._
 
 - **Sub-Agents** - Task-specific agents with custom prompts (color coding included)
 
   ![Sub-Agents Management](images/manage_agents.png)
 
-  *Organize agents in folders and see them color-coded based on their YAML frontmatter configuration.*
+  _Organize agents in folders and see them color-coded based on their YAML frontmatter configuration._
 
 - **Hooks** - Create, edit, delete with a GUI interface for quick adding
 
   ![Hooks Management](images/manage_hooks.png)
-  
-  *View all hooks organized by location (Global/Project), event type, and execution context.*
+
+  _View all hooks organized by location (Global/Project), event type, and execution context._
 
 - **Permissions** - Fine-grained control over tool access
 
   ![Permissions Management](images/manage_permissions.png)
 
-  *Browse all permission rules organized by type (Allow/Ask/Deny) and tool - see exactly what Claude Code can access.*
+  _Browse all permission rules organized by type (Allow/Ask/Deny) and tool - see exactly what Claude Code can access._
 
-### ⚡ **Powerful Tools**
+###  **Powerful Tools**
 
 - **One-Click Creation** - Add new configs with templates via `+` buttons
 - **Quickly Change Scopes** - Move files between Global and Project with right-click
@@ -88,7 +88,7 @@ All your Claude Code configurations organized in one beautiful tree view:
 - **Color-Coded Agents** - Sub-agents display in their configured colors for easy identification
 - **Quick Links** to official Claude Code documentation for configs and setup.
 
-### ↩️ **Hooks Management Interface**
+###  **Hooks Management Interface**
 
 Create and manage Claude Code hooks without touching JSON:
 
@@ -274,7 +274,7 @@ src/
 
 ---
 
-## 🤝 Contributing
+##  Contributing
 
 Contributions are welcome! Here's how to help:
 
@@ -289,26 +289,20 @@ Contributions are welcome! Here's how to help:
 
 - 📊 Usage analytics dashboard
 - 🌐 Internationalization (i18n)
+- 🔌 Plugin Management Support
 - 🎨 Additional themes/icons
 - 📝 Documentation improvements
 - 🐛 Bug fixes and optimizations
 
 ---
 
-## 📄 License
+##  License
 
-MIT © 2024
-
----
-
-## 🙏 Acknowledgments
-
-- **[Claude Code](https://docs.anthropic.com/en/docs/claude-code/overview)** by Anthropic - The amazing AI coding assistant
-- **VS Code Extension API** - Powerful extensibility platform
+See [LICENSE](LICENSE) file for details.
 
 ---
 
-## 📞 Support
+## Support
 
 - **Issues** - [GitHub Issues](../../issues)
 - **Discussions** - [GitHub Discussions](../../discussions)

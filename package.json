@@ -3,6 +3,7 @@
   "displayName": "Claude Code Config",
   "description": "Manage and configure Claude Code settings with powerful tools and analytics",
   "version": "1.0.0",
+  "license": "MIT",
   "publisher": "your-publisher",
   "repository": {
     "type": "git",
