@@ -5,6 +5,29 @@ All notable changes to the Claude Code Config extension will be documented in th
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.1](https://github.com/drewipson/claude-code-config/compare/claude-code-config-v1.0.0...claude-code-config-v1.0.1) (2025-11-24)
+
+
+### Bug Fixes
+
+* resolve all ESLint errors and warnings ([25a80af](https://github.com/drewipson/claude-code-config/commit/25a80af1f61147d1e30fce4d16e41e92060ee7e9))
+* resolve moveToFolder error and remove MCP servers section ([904c4cc](https://github.com/drewipson/claude-code-config/commit/904c4cc5c99cb8dffff9f48580038728390e4c40))
+
+
+### Documentation
+
+* enhance README with feature screenshots and fix typo ([7375342](https://github.com/drewipson/claude-code-config/commit/7375342ca620ac6ff5d1b49a31e6da5f9921b690))
+* enhance README with feature screenshots and fix typo ([0e6995d](https://github.com/drewipson/claude-code-config/commit/0e6995d476d4bac644b5736f13d4dbd37b493dae))
+
+
+### Continuous Integration
+
+* add CI/CD pipeline for VS Code Marketplace publishing ([6446973](https://github.com/drewipson/claude-code-config/commit/6446973c9b2e37f816ce118a57ee4f9fcfd999bd))
+* add GitHub Actions CI/CD pipeline ([39c3dfa](https://github.com/drewipson/claude-code-config/commit/39c3dfa4af80a6aeba80b05a05cb2d90b66d5504))
+* add GitHub Actions workflows for CI/CD pipeline ([ca226e9](https://github.com/drewipson/claude-code-config/commit/ca226e9e706e652c3f651d71c9a087040b396416))
+* simplify CI to lint and build only ([729fb1b](https://github.com/drewipson/claude-code-config/commit/729fb1bb701bf07454e70f7dcd6c5bc664a1f2f2))
+* update to non-deprecated release-please action ([5e03c6c](https://github.com/drewipson/claude-code-config/commit/5e03c6ce5870bf72e618411f732a01cfbe8ab6b3))
+
 ## [1.0.0] - 2024-01-XX
 
 ### 🎉 Major Release
