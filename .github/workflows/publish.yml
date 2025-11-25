@@ -77,7 +77,7 @@ jobs:
             --title "${{ steps.version.outputs.version }}" \
             --generate-notes
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.GH_PAT }}
 
       - name: Publish to VS Code Marketplace
         if: steps.check.outputs.exists == 'false'
