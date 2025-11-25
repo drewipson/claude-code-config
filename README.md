@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="resources/icons/claude-logo.png" alt="Claude Code Config Logo" width="120" height="120">
+  <img src="https://raw.githubusercontent.com/drewipson/claude-code-config/main/resources/icons/claude-logo.png" alt="Claude Code Config Logo" width="120" height="120">
 
 # Claude Code Config
 
@@ -12,7 +12,7 @@ Visualize, organize, and control all your Claude Code settings from one interfac
 
 </div>
 
-![Claude Code Config Interface](images/Claude%20Code%20Config.png)
+![Claude Code Config Interface](https://raw.githubusercontent.com/drewipson/claude-code-config/main/images/Claude%20Code%20Config.png)
 
 ---
 
@@ -45,37 +45,37 @@ All your Claude Code configurations organized in one beautiful tree view:
 
 - **Memories** (CLAUDE.md) - Your project context and persistent knowledge with drill down into specific markdown levels.
 
-  ![Memories Management](images/manage_memories.png)
+  ![Memories Management](https://raw.githubusercontent.com/drewipson/claude-code-config/main/images/manage_memories.png)
 
   _Navigate through your CLAUDE.md files by section - expand any heading to jump directly to that content._
 
 - **Commands** - Custom slash commands for your workflow
 
-  ![Commands Management](images/manage_commands.png)
+  ![Commands Management](https://raw.githubusercontent.com/drewipson/claude-code-config/main/images/manage_commands.png)
 
   _Explore command structure with expandable sections showing all H1, H2, and H3 headings for quick navigation._
 
 - **Skills** - Reusable AI capabilities and specialized behaviors
 
-  ![Skills Management](images/manage_skills.png)
+  ![Skills Management](https://raw.githubusercontent.com/drewipson/claude-code-config/main/images/manage_skills.png)
 
   _Organize skills in folders - each skill folder contains a SKILL.md file with specialized AI capabilities._
 
 - **Sub-Agents** - Task-specific agents with custom prompts (color coding included)
 
-  ![Sub-Agents Management](images/manage_agents.png)
+  ![Sub-Agents Management](https://raw.githubusercontent.com/drewipson/claude-code-config/main/images/manage_agents.png)
 
   _Organize agents in folders and see them color-coded based on their YAML frontmatter configuration._
 
 - **Hooks** - Create, edit, delete with a GUI interface for quick adding
 
-  ![Hooks Management](images/manage_hooks.png)
+  ![Hooks Management](https://raw.githubusercontent.com/drewipson/claude-code-config/main/images/manage_hooks.png)
 
   _View all hooks organized by location (Global/Project), event type, and execution context._
 
 - **Permissions** - Fine-grained control over tool access
 
-  ![Permissions Management](images/manage_permissions.png)
+  ![Permissions Management](https://raw.githubusercontent.com/drewipson/claude-code-config/main/images/manage_permissions.png)
 
   _Browse all permission rules organized by type (Allow/Ask/Deny) and tool - see exactly what Claude Code can access._
 
