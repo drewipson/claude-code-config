@@ -1,26 +1,11 @@
 name: Publish Extension
 
 on:
-  workflow_dispatch:
-    inputs:
-      logLevel:
-        description: "Log level"
-        required: true
-        default: "warning"
-        type: choice
-        options:
-          - info
-          - warning
-          - debug
-<<<<<<< Updated upstream
   push:
     branches: [main]
     paths:
       - 'package.json'
-=======
-  release:
-    types: [published]
->>>>>>> Stashed changes
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -33,51 +18,60 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.release.tag_name }}
+          fetch-depth: 0
+
+      - name: Get version from package.json
+        id: version
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          echo "version=v${VERSION}" >> $GITHUB_OUTPUT
+          echo "Version: v${VERSION}"
+
+      - name: Check if tag exists
+        id: check
+        run: |
+          if git rev-parse "${{ steps.version.outputs.version }}" >/dev/null 2>&1; then
+            echo "exists=true" >> $GITHUB_OUTPUT
+            echo "Tag ${{ steps.version.outputs.version }} already exists"
+          else
+            echo "exists=false" >> $GITHUB_OUTPUT
+            echo "Tag ${{ steps.version.outputs.version }} does not exist - will publish"
+          fi
 
       - name: Setup Node.js
+        if: steps.check.outputs.exists == 'false'
         uses: actions/setup-node@v4
         with:
-          node-version: "20"
-          cache: "npm"
+          node-version: '20'
+          cache: 'npm'
 
       - name: Install dependencies
+        if: steps.check.outputs.exists == 'false'
         run: npm ci
 
       - name: Install vsce
+        if: steps.check.outputs.exists == 'false'
         run: npm install -g @vscode/vsce
 
       - name: Build extension
+        if: steps.check.outputs.exists == 'false'
         run: npm run build
 
       - name: Package extension
-        id: package
-        run: |
-          VERSION="${{ github.event.release.tag_name }}"
-          VERSION="${VERSION#v}"
-          FILENAME="claude-code-config-${VERSION}.vsix"
-          vsce package --out "${FILENAME}"
-          echo "vsix_file=${FILENAME}" >> $GITHUB_OUTPUT
+        if: steps.check.outputs.exists == 'false'
+        run: vsce package --out claude-code-config.vsix
 
-<<<<<<< Updated upstream
       - name: Create GitHub Release
         if: steps.check.outputs.exists == 'false'
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ steps.version.outputs.version }}
+          name: ${{ steps.version.outputs.version }}
           files: claude-code-config.vsix
           generate_release_notes: true
-=======
-      - name: Upload VSIX to release
-        run: |
-          gh release upload "${{ github.event.release.tag_name }}" \
-            "${{ steps.package.outputs.vsix_file }}" \
-            --clobber
->>>>>>> Stashed changes
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Publish to VS Code Marketplace
+        if: steps.check.outputs.exists == 'false'
         run: vsce publish -p ${{ secrets.VSCE_PAT }}
         env:
           VSCE_PAT: ${{ secrets.VSCE_PAT }}
