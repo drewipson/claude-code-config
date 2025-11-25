@@ -6,6 +6,9 @@ on:
     paths:
       - 'package.json'
 
+permissions:
+  contents: write
+
 jobs:
   tag:
     name: Create Release Tag
@@ -15,6 +18,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Get version from package.json
         id: version
@@ -36,3 +40,5 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git tag ${{ steps.version.outputs.version }}
           git push origin ${{ steps.version.outputs.version }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
