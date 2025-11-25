@@ -71,12 +71,13 @@ jobs:
 
       - name: Create GitHub Release
         if: steps.check.outputs.exists == 'false'
-        uses: softprops/action-gh-release@v2
-        with:
-          tag_name: ${{ steps.version.outputs.version }}
-          name: ${{ steps.version.outputs.version }}
-          files: claude-code-config.vsix
-          generate_release_notes: true
+        run: |
+          gh release create "${{ steps.version.outputs.version }}" \
+            claude-code-config.vsix \
+            --title "${{ steps.version.outputs.version }}" \
+            --generate-notes
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Publish to VS Code Marketplace
         if: steps.check.outputs.exists == 'false'
