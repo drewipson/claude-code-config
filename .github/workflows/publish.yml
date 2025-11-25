@@ -1,8 +1,9 @@
 name: Publish to VS Code Marketplace
 
 on:
-  release:
-    types: [published]
+  push:
+    tags:
+      - 'v*'
 
 permissions:
   contents: write
@@ -14,8 +15,6 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-        with:
-          ref: ${{ github.event.release.tag_name }}
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -35,10 +34,11 @@ jobs:
       - name: Package extension
         run: vsce package --out claude-code-config.vsix
 
-      - name: Upload VSIX to release
+      - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           files: claude-code-config.vsix
+          generate_release_notes: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 

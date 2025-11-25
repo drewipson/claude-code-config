@@ -24,10 +24,6 @@ esbuild.js
 tsconfig.json
 .eslintrc.json
 
-# Release please config
-release-please-config.json
-.release-please-manifest.json
-
 # Documentation (keep README and LICENSE)
 MIGRATION.md
 
