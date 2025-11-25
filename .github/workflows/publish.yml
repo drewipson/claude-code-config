@@ -1,10 +1,21 @@
 name: Release & Publish
 
 on:
+  workflow_dispatch:
+    inputs:
+      logLevel:
+        description: "Log level"
+        required: true
+        default: "warning"
+        type: choice
+        options:
+          - info
+          - warning
+          - debug
   push:
     branches: [main]
     paths:
-      - 'package.json'
+      - "package.json"
 
 permissions:
   contents: write
@@ -42,8 +53,8 @@ jobs:
         if: steps.check.outputs.exists == 'false'
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          cache: 'npm'
+          node-version: "20"
+          cache: "npm"
 
       - name: Install dependencies
         if: steps.check.outputs.exists == 'false'
