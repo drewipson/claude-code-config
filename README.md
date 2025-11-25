@@ -24,13 +24,13 @@ However, these configs can be scattered all over the place. I would forget where
 
 I built Claude Code Config because I use Claude Code extensively in my personal and professional projects and wanted quick insight into how Claude is set up for a given project.
 
-##  What does Claude Code Config do?
+## What does Claude Code Config do?
 
 Claude Code Config solves the problem of scattered configuration files by creating a single command center for managing all Claude Code settings. Instead of navigating between `~/.claude/` and `.claude/` directories, users can visualize, create, edit, and organize everything from a VS Code sidebar.
 
 **Perfect for developers who want to:**
 
--  Manage Claude Code settings across your global, project, and local configurations.
+- Manage Claude Code settings across your global, project, and local configurations.
 - Quickly add agents, hooks, skills, commands with templates directly from Claude docs so you set them up right every time.
 - Move a skill, hook, agent from a local project config to your global set up with one click so your other projects benefit from that skill.
 - Quickly see what can and can't be executed by Claude Code Permissions
@@ -39,7 +39,7 @@ Claude Code Config solves the problem of scattered configuration files by creati
 
 ## 🎯 Key Features
 
-###  **Unified Configuration Management**
+### **Unified Configuration Management**
 
 All your Claude Code configurations organized in one beautiful tree view:
 
@@ -79,7 +79,7 @@ All your Claude Code configurations organized in one beautiful tree view:
 
   _Browse all permission rules organized by type (Allow/Ask/Deny) and tool - see exactly what Claude Code can access._
 
-###  **Powerful Tools**
+### **Powerful Tools**
 
 - **One-Click Creation** - Add new configs with templates via `+` buttons
 - **Quickly Change Scopes** - Move files between Global and Project with right-click
@@ -88,7 +88,7 @@ All your Claude Code configurations organized in one beautiful tree view:
 - **Color-Coded Agents** - Sub-agents display in their configured colors for easy identification
 - **Quick Links** to official Claude Code documentation for configs and setup.
 
-###  **Hooks Management Interface**
+### **Hooks Management Interface**
 
 Create and manage Claude Code hooks without touching JSON:
 
@@ -118,7 +118,7 @@ Download "Claude Code Config" from the VS Code Marketplace
 #### From Source
 
 ```bash
-git clone https://github.com/your-username/claude-code-config.git
+git clone https://github.com/drewipson/claude-code-config.git
 cd claude-code-config
 npm install
 npm run build
@@ -274,7 +274,7 @@ src/
 
 ---
 
-##  Contributing
+## Contributing
 
 Contributions are welcome! Here's how to help:
 
@@ -296,7 +296,7 @@ Contributions are welcome! Here's how to help:
 
 ---
 
-##  License
+## License
 
 See [LICENSE](LICENSE) file for details.
 

@@ -2,12 +2,12 @@
   "name": "claude-code-config",
   "displayName": "Claude Code Config",
   "description": "Manage and configure Claude Code settings with powerful tools and analytics",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "license": "MIT",
   "publisher": "drewipson",
   "repository": {
     "type": "git",
-    "url": "https://github.com/your-username/claude-code-config"
+    "url": "https://github.com/drewipson/claude-code-config"
   },
   "engines": {
     "vscode": "^1.85.0"
