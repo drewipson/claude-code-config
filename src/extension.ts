@@ -9,6 +9,7 @@ import {
   CommandsTreeProvider,
   SkillsTreeProvider,
   SubAgentsTreeProvider,
+  RulesTreeProvider,
   PermissionsTreeProvider,
   HooksTreeProvider,
   DocumentationTreeProvider,
@@ -33,6 +34,7 @@ export function activate(context: vscode.ExtensionContext) {
   const commandsProvider = new CommandsTreeProvider(fileDiscoveryService);
   const skillsProvider = new SkillsTreeProvider(fileDiscoveryService);
   const subAgentsProvider = new SubAgentsTreeProvider(fileDiscoveryService);
+  const rulesProvider = new RulesTreeProvider(fileDiscoveryService);
   const permissionsProvider = new PermissionsTreeProvider(permissionsService);
   const hooksProvider = new HooksTreeProvider(hooksService);
   const documentationProvider = new DocumentationTreeProvider();
@@ -43,6 +45,7 @@ export function activate(context: vscode.ExtensionContext) {
     vscode.window.registerTreeDataProvider(VIEW_IDS.commands, commandsProvider),
     vscode.window.registerTreeDataProvider(VIEW_IDS.skills, skillsProvider),
     vscode.window.registerTreeDataProvider(VIEW_IDS.subAgents, subAgentsProvider),
+    vscode.window.registerTreeDataProvider(VIEW_IDS.rules, rulesProvider),
     vscode.window.registerTreeDataProvider(VIEW_IDS.permissions, permissionsProvider),
     vscode.window.registerTreeDataProvider(VIEW_IDS.hooks, hooksProvider),
     vscode.window.registerTreeDataProvider(VIEW_IDS.documentation, documentationProvider)
@@ -54,6 +57,7 @@ export function activate(context: vscode.ExtensionContext) {
     commandsProvider.refresh();
     skillsProvider.refresh();
     subAgentsProvider.refresh();
+    rulesProvider.refresh();
     permissionsProvider.refresh();
     hooksProvider.refresh();
   };
@@ -127,6 +131,9 @@ export function activate(context: vscode.ExtensionContext) {
           break;
         case 'skill':
           allFiles = await fileDiscoveryService.discoverSkills();
+          break;
+        case 'rule':
+          allFiles = await fileDiscoveryService.discoverRules();
           break;
         default:
           vscode.window.showInformationMessage('This file type cannot be moved to folders.');
@@ -956,6 +963,165 @@ export function activate(context: vscode.ExtensionContext) {
         }
       } catch (error) {
         vscode.window.showErrorMessage(`Failed to duplicate hook: ${error}`);
+      }
+    }),
+
+    // Create rule command
+    vscode.commands.registerCommand(COMMAND_IDS.createRule, async () => {
+      const scope = await vscode.window.showQuickPick(['Global', 'Project'], {
+        placeHolder: 'Select scope for new rule',
+      });
+
+      if (!scope) {
+        return;
+      }
+
+      if (scope === 'Project') {
+        const workspaceFolder = vscode.workspace.workspaceFolders?.[0];
+        if (!workspaceFolder) {
+          vscode.window.showErrorMessage('No workspace folder open.');
+          return;
+        }
+      }
+
+      const name = await vscode.window.showInputBox({
+        prompt: 'Enter rule name',
+        placeHolder: 'my-rule',
+        validateInput: (value) => {
+          if (!value || value.trim() === '') {
+            return 'Name cannot be empty';
+          }
+          if (!/^[\w-]+$/.test(value)) {
+            return 'Name can only contain letters, numbers, underscores, and hyphens';
+          }
+          return null;
+        },
+      });
+
+      if (!name) {
+        return;
+      }
+
+      const fileName = name.endsWith('.md') ? name : `${name}.md`;
+
+      // Read template
+      const templatePath = vscode.Uri.joinPath(
+        context.extensionUri,
+        'resources',
+        'templates',
+        'rule.md.template'
+      );
+
+      try {
+        const templateContent = await vscode.workspace.fs.readFile(templatePath);
+        let template = Buffer.from(templateContent).toString('utf-8');
+
+        // Replace rule name placeholder in template
+        template = template.replace(/rule-name/g, name);
+
+        const filePath = await fileOperationsService.createFile(
+          'rule',
+          scope.toLowerCase() as 'global' | 'project',
+          fileName,
+          template
+        );
+
+        if (filePath) {
+          const document = await vscode.workspace.openTextDocument(filePath);
+          await vscode.window.showTextDocument(document);
+          refreshAll();
+        }
+      } catch (error) {
+        vscode.window.showErrorMessage(
+          `Failed to create rule: ${error instanceof Error ? error.message : 'Unknown error'}`
+        );
+      }
+    }),
+
+    // Create rule folder command
+    vscode.commands.registerCommand(COMMAND_IDS.createRuleFolder, async () => {
+      const scope = await vscode.window.showQuickPick(['Global', 'Project'], {
+        placeHolder: 'Select scope for new rule folder',
+      });
+
+      if (!scope) {
+        return;
+      }
+
+      if (scope === 'Project') {
+        const workspaceFolder = vscode.workspace.workspaceFolders?.[0];
+        if (!workspaceFolder) {
+          vscode.window.showErrorMessage('No workspace folder open.');
+          return;
+        }
+      }
+
+      const folderPath = await fileOperationsService.createFolder(
+        'rule',
+        scope.toLowerCase() as 'global' | 'project'
+      );
+
+      if (folderPath) {
+        refreshAll();
+      }
+    }),
+
+    // Create rule in folder command
+    vscode.commands.registerCommand(COMMAND_IDS.createRuleInFolder, async (item: ClaudeTreeItem) => {
+      if (!item?.claudeFile?.isDirectory) {
+        return;
+      }
+
+      const name = await vscode.window.showInputBox({
+        prompt: 'Enter rule name',
+        placeHolder: 'my-rule',
+        validateInput: (value) => {
+          if (!value || value.trim() === '') {
+            return 'Name cannot be empty';
+          }
+          if (!/^[\w-]+$/.test(value)) {
+            return 'Name can only contain letters, numbers, underscores, and hyphens';
+          }
+          return null;
+        },
+      });
+
+      if (!name) {
+        return;
+      }
+
+      const fileName = name.endsWith('.md') ? name : `${name}.md`;
+
+      const templatePath = vscode.Uri.joinPath(
+        context.extensionUri,
+        'resources',
+        'templates',
+        'rule.md.template'
+      );
+
+      try {
+        const templateContent = await vscode.workspace.fs.readFile(templatePath);
+        let template = Buffer.from(templateContent).toString('utf-8');
+
+        template = template.replace(/rule-name/g, name);
+
+        const filePath = await fileOperationsService.createFile(
+          'rule',
+          item.claudeFile.scope as 'global' | 'project',
+          fileName,
+          template,
+          path.basename(item.claudeFile.path)
+        );
+
+        if (filePath) {
+          const document = await vscode.workspace.openTextDocument(filePath);
+          await vscode.window.showTextDocument(document);
+          refreshAll();
+        }
+      } catch (error) {
+        vscode.window.showErrorMessage(
+          `Failed to create rule: ${error instanceof Error ? error.message : 'Unknown error'}`
+        );
       }
     })
   );

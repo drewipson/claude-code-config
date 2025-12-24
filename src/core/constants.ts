@@ -13,6 +13,7 @@ export const CLAUDE_MD_PATTERNS = ['CLAUDE.md', 'claude.md'];
 export const SKILLS_DIR = 'skills';
 export const AGENTS_DIR = 'agents';
 export const COMMANDS_DIR = 'commands';
+export const RULES_DIR = 'rules';
 
 // File extensions
 export const MARKDOWN_EXTENSIONS = ['.md', '.markdown'];
@@ -24,6 +25,7 @@ export const VIEW_IDS = {
   commands: 'ccm.commands',
   skills: 'ccm.skills',
   subAgents: 'ccm.subAgents',
+  rules: 'ccm.rules',
   permissions: 'ccm.permissions',
   hooks: 'ccm.hooks',
   documentation: 'ccm.documentation',
@@ -57,6 +59,9 @@ export const COMMAND_IDS = {
   deleteHook: 'ccm.deleteHook',
   duplicateHook: 'ccm.duplicateHook',
   copyHookJson: 'ccm.copyHookJson',
+  createRule: 'ccm.createRule',
+  createRuleFolder: 'ccm.createRuleFolder',
+  createRuleInFolder: 'ccm.createRuleInFolder',
 };
 
 // Documentation links
@@ -72,6 +77,12 @@ export const DOCUMENTATION_LINKS: DocumentationLink[] = [
     url: 'https://code.claude.com/docs/en/memory',
     description: 'Writing effective CLAUDE.md files',
     icon: 'file-text',
+  },
+  {
+    title: 'Rules',
+    url: 'https://code.claude.com/docs/en/memory#rules',
+    description: 'Modular rules with path targeting',
+    icon: 'law',
   },
   {
     title: 'Sub-Agents',
@@ -94,6 +105,7 @@ export const ICONS = {
   command: 'terminal',
   skill: 'lightbulb',
   subAgent: 'robot',
+  rule: 'law',
   permission: 'shield',
   settings: 'gear',
   folder: 'folder',
