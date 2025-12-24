@@ -8,6 +8,7 @@ import {
   COMMANDS_DIR,
   SKILLS_DIR,
   AGENTS_DIR,
+  RULES_DIR,
   MARKDOWN_EXTENSIONS,
 } from '../core/constants';
 
@@ -36,17 +37,17 @@ export class FileDiscoveryService {
     commands: ClaudeFile[];
     skills: ClaudeFile[];
     subAgents: ClaudeFile[];
-    
+    rules: ClaudeFile[];
   }> {
-    const [memories, commands, skills, subAgents] = await Promise.all([
+    const [memories, commands, skills, subAgents, rules] = await Promise.all([
       this.discoverMemories(),
       this.discoverCommands(),
       this.discoverSkills(),
       this.discoverSubAgents(),
-      
+      this.discoverRules(),
     ]);
 
-    return { memories, commands, skills, subAgents };
+    return { memories, commands, skills, subAgents, rules };
   }
 
   async discoverMemories(): Promise<ClaudeFile[]> {
@@ -102,6 +103,63 @@ export class FileDiscoveryService {
     return this.discoverFilesAndDirsInDir(AGENTS_DIR, 'subAgent', MARKDOWN_EXTENSIONS);
   }
 
+  async discoverRules(): Promise<ClaudeFile[]> {
+    // Rules can be in both global (~/.claude/rules/) and project (.claude/rules/)
+    const items: ClaudeFile[] = [];
+
+    // Global rules
+    const globalRulesDir = path.join(this.globalClaudePath, RULES_DIR);
+    if (await this.directoryExists(globalRulesDir)) {
+      const globalItems = await this.getFilesAndDirsInDirectory(globalRulesDir, MARKDOWN_EXTENSIONS);
+      for (const item of globalItems) {
+        const file = await this.createClaudeFile(item.path, 'rule', 'global', 'Global', item.isDirectory);
+
+        // Parse paths from YAML frontmatter for rules
+        if (!item.isDirectory) {
+          try {
+            const { parseYamlFrontmatter } = await import('../utils/yamlParser');
+            const frontmatter = await parseYamlFrontmatter(item.path);
+            if (frontmatter?.paths) {
+              file.paths = frontmatter.paths;
+            }
+          } catch (error) {
+            // Silently ignore parsing errors
+          }
+        }
+
+        items.push(file);
+      }
+    }
+
+    // Project rules
+    const projectClaudePath = this.getProjectClaudePath();
+    if (projectClaudePath) {
+      const rulesDir = path.join(projectClaudePath, RULES_DIR);
+      if (await this.directoryExists(rulesDir)) {
+        const projectItems = await this.getFilesAndDirsInDirectory(rulesDir, MARKDOWN_EXTENSIONS);
+        for (const item of projectItems) {
+          const file = await this.createClaudeFile(item.path, 'rule', 'project', 'Project', item.isDirectory);
+
+          // Parse paths from YAML frontmatter for rules
+          if (!item.isDirectory) {
+            try {
+              const { parseYamlFrontmatter } = await import('../utils/yamlParser');
+              const frontmatter = await parseYamlFrontmatter(item.path);
+              if (frontmatter?.paths) {
+                file.paths = frontmatter.paths;
+              }
+            } catch (error) {
+              // Silently ignore parsing errors
+            }
+          }
+
+          items.push(file);
+        }
+      }
+    }
+
+    return items;
+  }
 
   private async discoverFilesInDir(
     dirName: string,

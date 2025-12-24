@@ -7,6 +7,7 @@ import {
   COMMANDS_DIR,
   SKILLS_DIR,
   AGENTS_DIR,
+  RULES_DIR,
 } from '../core/constants';
 
 export class FileOperationsService {
@@ -146,6 +147,7 @@ export class FileOperationsService {
       command: COMMANDS_DIR,
       skill: SKILLS_DIR,
       subAgent: AGENTS_DIR,
+      rule: RULES_DIR,
     };
 
     const subDir = dirMap[fileType];
@@ -247,11 +249,11 @@ export class FileOperationsService {
         // Delete single file
         await fs.promises.unlink(claudeFile.path);
 
-        // If the parent directory is empty and it's in skills/agents/commands, delete it too
+        // If the parent directory is empty and it's in skills/agents/commands/rules, delete it too
         const parentDir = path.dirname(claudeFile.path);
         const parentDirName = path.basename(path.dirname(parentDir));
 
-        if (['skills', 'agents', 'commands'].includes(parentDirName)) {
+        if (['skills', 'agents', 'commands', 'rules'].includes(parentDirName)) {
           try {
             const filesInParent = await fs.promises.readdir(parentDir);
             if (filesInParent.length === 0) {

@@ -11,6 +11,7 @@ export interface ClaudeFile {
   isDirectory?: boolean;
   parentType?: ClaudeFileType; // For folders, indicates what type of files they contain
   color?: string; // For sub-agents, optional color from YAML frontmatter
+  paths?: string; // For rules, optional path targeting from YAML frontmatter
 }
 
 export type ClaudeFileType =
@@ -18,6 +19,7 @@ export type ClaudeFileType =
   | 'command'      // Slash command files
   | 'skill'        // Skill files (SKILL.md)
   | 'subAgent'     // Sub-agent files
+  | 'rule'         // Rule files (.claude/rules/)
   | 'permission'   // Permission files
   | 'settings';    // Settings files
 

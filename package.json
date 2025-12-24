@@ -61,6 +61,10 @@
           "name": "Sub-Agents"
         },
         {
+          "id": "ccm.rules",
+          "name": "Rules"
+        },
+        {
           "id": "ccm.permissions",
           "name": "Permissions"
         },
@@ -213,6 +217,23 @@
         "command": "ccm.copyHookJson",
         "title": "Copy Hook JSON",
         "category": "Claude Code Config"
+      },
+      {
+        "command": "ccm.createRule",
+        "title": "Create Rule",
+        "icon": "$(add)",
+        "category": "Claude Code Config"
+      },
+      {
+        "command": "ccm.createRuleFolder",
+        "title": "Create Rule Folder",
+        "icon": "$(new-folder)",
+        "category": "Claude Code Config"
+      },
+      {
+        "command": "ccm.createRuleInFolder",
+        "title": "New Rule in Folder",
+        "category": "Claude Code Config"
       }
     ],
     "menus": {
@@ -256,6 +277,16 @@
           "command": "ccm.createHook",
           "when": "view == ccm.hooks",
           "group": "navigation@1"
+        },
+        {
+          "command": "ccm.createRule",
+          "when": "view == ccm.rules",
+          "group": "navigation@1"
+        },
+        {
+          "command": "ccm.createRuleFolder",
+          "when": "view == ccm.rules",
+          "group": "navigation@2"
         }
       ],
       "view/item/context": [
@@ -347,6 +378,11 @@
         {
           "command": "ccm.createSubAgentInFolder",
           "when": "viewItem == claudeFolder && view == ccm.subAgents",
+          "group": "create@1"
+        },
+        {
+          "command": "ccm.createRuleInFolder",
+          "when": "viewItem == claudeFolder && view == ccm.rules",
           "group": "create@1"
         },
         {

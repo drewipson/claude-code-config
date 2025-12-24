@@ -1,0 +1,39 @@
+---
+description: Brief description of this rule
+paths: src/**/*.ts
+---
+
+# rule-name
+
+Rules are modular instructions that Claude follows when working on matching files.
+Path targeting (in frontmatter above) ensures this rule only applies when working on files matching the pattern.
+
+## When to Apply
+
+This rule applies when:
+- Working with files matching the `paths` pattern above
+- [Add specific conditions]
+
+## Guidelines
+
+1. [First guideline]
+2. [Second guideline]
+3. [Third guideline]
+
+## Examples
+
+Good:
+```
+[Example of correct behavior]
+```
+
+Avoid:
+```
+[Example of what to avoid]
+```
+
+## Notes
+
+- Rules without `paths` frontmatter apply to all files
+- Use glob patterns: `src/**/*.ts`, `*.test.js`, `api/**/*`
+- Rules are project-specific (stored in .claude/rules/)

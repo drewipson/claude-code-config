@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
-import { ClaudeFile, ClaudeFileType, PermissionRule, HookConfiguration, Hook, HookTreeItemData } from '../core/types';
+import { ClaudeFile, ClaudeFileType, PermissionRule, HookConfiguration, HookMatcher, Hook, HookTreeItemData } from '../core/types';
 import { FileDiscoveryService } from '../services/fileDiscoveryService';
 import { PermissionsService } from '../services/permissionsService';
 import { HooksService } from '../services/hooksService';
@@ -27,8 +27,6 @@ export class ClaudeTreeItem extends vscode.TreeItem {
     super(label, collapsibleState);
 
     if (claudeFile && itemType === 'file') {
-      this.description = `[${claudeFile.scopeLabel}]`;
-
       // Check if this is a SKILL.md file (inside a skill folder)
       const isSkillFile = claudeFile.type === 'skill' &&
                           path.basename(claudeFile.path).toUpperCase() === 'SKILL.MD';
@@ -45,7 +43,7 @@ export class ClaudeTreeItem extends vscode.TreeItem {
       };
 
       // Set basic tooltip - will be enhanced by getTreeItem if YAML exists
-      this.tooltip = `${claudeFile.path}\n\nScope: ${claudeFile.scopeLabel}`;
+      this.tooltip = `${claudeFile.path}`;
     }
   }
 
@@ -86,6 +84,7 @@ export class ClaudeTreeItem extends vscode.TreeItem {
       command: 'terminal',
       skill: 'lightbulb',
       subAgent: 'hubot',
+      rule: 'law',
       mcp: 'plug',
       permission: 'shield',
       settings: 'gear',
@@ -290,6 +289,11 @@ export class MemoriesTreeProvider implements vscode.TreeDataProvider<ClaudeTreeI
   }
 
   async getChildren(element?: ClaudeTreeItem): Promise<ClaudeTreeItem[]> {
+    // If element has children (headers), return them
+    if (element && element.children) {
+      return element.children;
+    }
+
     // If element is a file (not a folder), return its sections
     if (element && element.claudeFile && element.itemType === 'file') {
       const sections = await parseMarkdownSections(element.claudeFile.path);
@@ -298,7 +302,7 @@ export class MemoriesTreeProvider implements vscode.TreeDataProvider<ClaudeTreeI
       );
     }
 
-    // Root level - return files
+    // Root level - return files grouped by scope
     if (!element) {
       const files = await this.fileDiscoveryService.discoverMemories();
       if (files.length === 0) {
@@ -309,15 +313,57 @@ export class MemoriesTreeProvider implements vscode.TreeDataProvider<ClaudeTreeI
         emptyItem.description = 'Create CLAUDE.md in project root';
         return [emptyItem];
       }
-      return files.map(
-        (file) =>
-          new ClaudeTreeItem(
-            file.name,
-            vscode.TreeItemCollapsibleState.Collapsed,
-            file,
-            'file'
-          )
-      );
+
+      // Group files by scope
+      const globalFiles = files.filter((f) => f.scope === 'global');
+      const projectFiles = files.filter((f) => f.scope === 'project');
+      const nestedFiles = files.filter((f) => f.scope === 'nested');
+
+      const items: ClaudeTreeItem[] = [];
+
+      // Global memories
+      if (globalFiles.length > 0) {
+        const globalHeader = new ClaudeTreeItem(
+          `Global (${globalFiles.length})`,
+          vscode.TreeItemCollapsibleState.Expanded
+        );
+        globalHeader.iconPath = new vscode.ThemeIcon('home');
+        globalHeader.description = '~/.claude';
+        globalHeader.children = globalFiles.map(
+          (file) => new ClaudeTreeItem(file.name, vscode.TreeItemCollapsibleState.Collapsed, file, 'file')
+        );
+        items.push(globalHeader);
+      }
+
+      // Project memories
+      if (projectFiles.length > 0) {
+        const projectHeader = new ClaudeTreeItem(
+          `Project (${projectFiles.length})`,
+          vscode.TreeItemCollapsibleState.Expanded
+        );
+        projectHeader.iconPath = new vscode.ThemeIcon('root-folder');
+        projectHeader.description = '.claude';
+        projectHeader.children = projectFiles.map(
+          (file) => new ClaudeTreeItem(file.name, vscode.TreeItemCollapsibleState.Collapsed, file, 'file')
+        );
+        items.push(projectHeader);
+      }
+
+      // Nested memories
+      if (nestedFiles.length > 0) {
+        const nestedHeader = new ClaudeTreeItem(
+          `Nested (${nestedFiles.length})`,
+          vscode.TreeItemCollapsibleState.Collapsed
+        );
+        nestedHeader.iconPath = new vscode.ThemeIcon('folder-library');
+        nestedHeader.description = 'subdirectories';
+        nestedHeader.children = nestedFiles.map(
+          (file) => new ClaudeTreeItem(file.name, vscode.TreeItemCollapsibleState.Collapsed, file, 'file')
+        );
+        items.push(nestedHeader);
+      }
+
+      return items;
     }
 
     return [];
@@ -342,8 +388,8 @@ export class CommandsTreeProvider implements vscode.TreeDataProvider<ClaudeTreeI
   }
 
   async getChildren(element?: ClaudeTreeItem): Promise<ClaudeTreeItem[]> {
-    // If element is a folder, return its children
-    if (element && element.itemType === 'folder' && element.children) {
+    // If element has children (headers or folders), return them
+    if (element && element.children) {
       return element.children;
     }
 
@@ -373,16 +419,32 @@ export class CommandsTreeProvider implements vscode.TreeDataProvider<ClaudeTreeI
 
       const items: ClaudeTreeItem[] = [];
 
+      // Global commands
       if (globalFiles.length > 0) {
+        const globalHeader = new ClaudeTreeItem(
+          `Global (${globalFiles.length})`,
+          vscode.TreeItemCollapsibleState.Expanded
+        );
+        globalHeader.iconPath = new vscode.ThemeIcon('home');
+        globalHeader.description = '~/.claude/commands';
+
         const globalDir = this.fileDiscoveryService.getGlobalClaudePath() + '/commands';
-        const globalTree = ClaudeTreeItem.buildTreeFromFiles(globalFiles, globalDir);
-        items.push(...globalTree);
+        globalHeader.children = ClaudeTreeItem.buildTreeFromFiles(globalFiles, globalDir);
+        items.push(globalHeader);
       }
 
+      // Project commands
       if (projectFiles.length > 0) {
+        const projectHeader = new ClaudeTreeItem(
+          `Project (${projectFiles.length})`,
+          vscode.TreeItemCollapsibleState.Expanded
+        );
+        projectHeader.iconPath = new vscode.ThemeIcon('root-folder');
+        projectHeader.description = '.claude/commands';
+
         const projectDir = this.fileDiscoveryService.getProjectClaudePath() + '/commands';
-        const projectTree = ClaudeTreeItem.buildTreeFromFiles(projectFiles, projectDir);
-        items.push(...projectTree);
+        projectHeader.children = ClaudeTreeItem.buildTreeFromFiles(projectFiles, projectDir);
+        items.push(projectHeader);
       }
 
       return items;
@@ -410,8 +472,8 @@ export class SkillsTreeProvider implements vscode.TreeDataProvider<ClaudeTreeIte
   }
 
   async getChildren(element?: ClaudeTreeItem): Promise<ClaudeTreeItem[]> {
-    // If element is a folder, return its children
-    if (element && element.itemType === 'folder' && element.children) {
+    // If element has children (headers or folders), return them
+    if (element && element.children) {
       return element.children;
     }
 
@@ -441,16 +503,32 @@ export class SkillsTreeProvider implements vscode.TreeDataProvider<ClaudeTreeIte
 
       const items: ClaudeTreeItem[] = [];
 
+      // Global skills
       if (globalFiles.length > 0) {
+        const globalHeader = new ClaudeTreeItem(
+          `Global (${globalFiles.length})`,
+          vscode.TreeItemCollapsibleState.Expanded
+        );
+        globalHeader.iconPath = new vscode.ThemeIcon('home');
+        globalHeader.description = '~/.claude/skills';
+
         const globalDir = this.fileDiscoveryService.getGlobalClaudePath() + '/skills';
-        const globalTree = ClaudeTreeItem.buildTreeFromFiles(globalFiles, globalDir);
-        items.push(...globalTree);
+        globalHeader.children = ClaudeTreeItem.buildTreeFromFiles(globalFiles, globalDir);
+        items.push(globalHeader);
       }
 
+      // Project skills
       if (projectFiles.length > 0) {
+        const projectHeader = new ClaudeTreeItem(
+          `Project (${projectFiles.length})`,
+          vscode.TreeItemCollapsibleState.Expanded
+        );
+        projectHeader.iconPath = new vscode.ThemeIcon('root-folder');
+        projectHeader.description = '.claude/skills';
+
         const projectDir = this.fileDiscoveryService.getProjectClaudePath() + '/skills';
-        const projectTree = ClaudeTreeItem.buildTreeFromFiles(projectFiles, projectDir);
-        items.push(...projectTree);
+        projectHeader.children = ClaudeTreeItem.buildTreeFromFiles(projectFiles, projectDir);
+        items.push(projectHeader);
       }
 
       return items;
@@ -478,8 +556,8 @@ export class SubAgentsTreeProvider implements vscode.TreeDataProvider<ClaudeTree
   }
 
   async getChildren(element?: ClaudeTreeItem): Promise<ClaudeTreeItem[]> {
-    // If element is a folder, return its children
-    if (element && element.itemType === 'folder' && element.children) {
+    // If element has children (headers or folders), return them
+    if (element && element.children) {
       return element.children;
     }
 
@@ -509,16 +587,32 @@ export class SubAgentsTreeProvider implements vscode.TreeDataProvider<ClaudeTree
 
       const items: ClaudeTreeItem[] = [];
 
+      // Global sub-agents
       if (globalFiles.length > 0) {
+        const globalHeader = new ClaudeTreeItem(
+          `Global (${globalFiles.length})`,
+          vscode.TreeItemCollapsibleState.Expanded
+        );
+        globalHeader.iconPath = new vscode.ThemeIcon('home');
+        globalHeader.description = '~/.claude/agents';
+
         const globalDir = this.fileDiscoveryService.getGlobalClaudePath() + '/agents';
-        const globalTree = ClaudeTreeItem.buildTreeFromFiles(globalFiles, globalDir);
-        items.push(...globalTree);
+        globalHeader.children = ClaudeTreeItem.buildTreeFromFiles(globalFiles, globalDir);
+        items.push(globalHeader);
       }
 
+      // Project sub-agents
       if (projectFiles.length > 0) {
+        const projectHeader = new ClaudeTreeItem(
+          `Project (${projectFiles.length})`,
+          vscode.TreeItemCollapsibleState.Expanded
+        );
+        projectHeader.iconPath = new vscode.ThemeIcon('root-folder');
+        projectHeader.description = '.claude/agents';
+
         const projectDir = this.fileDiscoveryService.getProjectClaudePath() + '/agents';
-        const projectTree = ClaudeTreeItem.buildTreeFromFiles(projectFiles, projectDir);
-        items.push(...projectTree);
+        projectHeader.children = ClaudeTreeItem.buildTreeFromFiles(projectFiles, projectDir);
+        items.push(projectHeader);
       }
 
       return items;
@@ -528,6 +622,96 @@ export class SubAgentsTreeProvider implements vscode.TreeDataProvider<ClaudeTree
   }
 }
 
+export class RulesTreeProvider implements vscode.TreeDataProvider<ClaudeTreeItem> {
+  private _onDidChangeTreeData: vscode.EventEmitter<ClaudeTreeItem | undefined | null | void> =
+    new vscode.EventEmitter<ClaudeTreeItem | undefined | null | void>();
+  readonly onDidChangeTreeData: vscode.Event<ClaudeTreeItem | undefined | null | void> =
+    this._onDidChangeTreeData.event;
+
+  constructor(private fileDiscoveryService: FileDiscoveryService) {}
+
+  refresh(): void {
+    this._onDidChangeTreeData.fire();
+  }
+
+  async getTreeItem(element: ClaudeTreeItem): Promise<vscode.TreeItem> {
+    // Enhance tooltip with YAML frontmatter
+    await ClaudeTreeItem.enhanceTooltipWithYaml(element);
+
+    // For rules, also show path targeting in description
+    if (element.claudeFile?.type === 'rule' && element.claudeFile?.paths && element.itemType === 'file') {
+      element.description = `[${element.claudeFile.paths}]`;
+    }
+
+    return element;
+  }
+
+  async getChildren(element?: ClaudeTreeItem): Promise<ClaudeTreeItem[]> {
+    // If element has children (headers or folders), return them
+    if (element && element.children) {
+      return element.children;
+    }
+
+    // If element is a file (not a folder), return its sections
+    if (element && element.claudeFile && element.itemType === 'file') {
+      const sections = await parseMarkdownSections(element.claudeFile.path);
+      return sections.map((section) =>
+        ClaudeTreeItem.createSectionItem(section, element.claudeFile!.path)
+      );
+    }
+
+    // Root level - return tree structure
+    if (!element) {
+      const files = await this.fileDiscoveryService.discoverRules();
+      if (files.length === 0) {
+        const emptyItem = new ClaudeTreeItem(
+          'No rules found',
+          vscode.TreeItemCollapsibleState.None
+        );
+        emptyItem.description = 'Click + to create';
+        return [emptyItem];
+      }
+
+      // Group files by global/project
+      const globalFiles = files.filter((f) => f.scope === 'global');
+      const projectFiles = files.filter((f) => f.scope === 'project');
+
+      const items: ClaudeTreeItem[] = [];
+
+      // Create Global Rules header
+      if (globalFiles.length > 0) {
+        const globalHeader = new ClaudeTreeItem(
+          `Global Rules (${globalFiles.length})`,
+          vscode.TreeItemCollapsibleState.Expanded
+        );
+        globalHeader.iconPath = new vscode.ThemeIcon('home');
+        globalHeader.description = '~/.claude/rules';
+
+        const globalDir = this.fileDiscoveryService.getGlobalClaudePath() + '/rules';
+        globalHeader.children = ClaudeTreeItem.buildTreeFromFiles(globalFiles, globalDir);
+        items.push(globalHeader);
+      }
+
+      // Create Project Rules header
+      if (projectFiles.length > 0) {
+        const projectHeader = new ClaudeTreeItem(
+          `Project Rules (${projectFiles.length})`,
+          vscode.TreeItemCollapsibleState.Expanded
+        );
+        projectHeader.iconPath = new vscode.ThemeIcon('root-folder');
+        projectHeader.description = '.claude/rules';
+
+        const projectDir = this.fileDiscoveryService.getProjectClaudePath() + '/rules';
+        projectHeader.children = ClaudeTreeItem.buildTreeFromFiles(projectFiles, projectDir);
+        items.push(projectHeader);
+      }
+
+      return items;
+    }
+
+    return [];
+  }
+}
 
 export class PermissionsTreeProvider implements vscode.TreeDataProvider<ClaudeTreeItem> {
   private _onDidChangeTreeData: vscode.EventEmitter<ClaudeTreeItem | undefined | null | void> =
@@ -728,13 +912,13 @@ export class HooksTreeProvider implements vscode.TreeDataProvider<ClaudeTreeItem
 
       // Create items for each location
       for (const [location, configs] of groupedByLocation) {
+        const isGlobal = location.includes('User');
         const locationHeader = new ClaudeTreeItem(
-          `${location} [${this.countHooks(configs)} hooks]`,
-          vscode.TreeItemCollapsibleState.Collapsed
+          `${isGlobal ? 'Global' : 'Project'} (${this.countHooks(configs)})`,
+          vscode.TreeItemCollapsibleState.Expanded
         );
-        locationHeader.iconPath = new vscode.ThemeIcon(
-          location.includes('User') ? 'home' : location.includes('Project') ? 'root-folder' : 'file'
-        );
+        locationHeader.iconPath = new vscode.ThemeIcon(isGlobal ? 'home' : 'root-folder');
+        locationHeader.description = isGlobal ? '~/.claude/settings.json' : '.claude/settings.local.json';
 
         // Group by event type within this location
         const groupedByEvent: Map<string, HookConfiguration[]> = new Map();
